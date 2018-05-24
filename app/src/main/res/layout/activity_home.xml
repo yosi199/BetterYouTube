@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="infinity.to.loop.betteryoutube.home.HomeViewModel" />
+
+        <variable
+            name="viewModel"
+            type="infinity.to.loop.betteryoutube.home.HomeViewModel" />
+
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".main.MainActivity">
+
+        <FrameLayout
+            android:id="@+id/youtube_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:onClick="@{viewModel::getUserPlaylists}"
+            android:text="Get Playlists!" />
+
+    </FrameLayout>
+
+</layout>

@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">BetterYouTube</string>
+    <string name="data_api">https://www.googleapis.com/youtube/v3/</string>
+</resources>

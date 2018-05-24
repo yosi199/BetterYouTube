@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--<string name="scopes" translatable="false">https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/youtube.upload</string>-->
+    <string name="scopes" translatable="false">https://www.googleapis.com/auth/youtube</string>
+</resources>
