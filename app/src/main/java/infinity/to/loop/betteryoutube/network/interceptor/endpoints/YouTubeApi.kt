@@ -8,5 +8,7 @@ interface YouTubeApi {
 
     @GET("playlists")
     fun userPlaylists(@Query("part") part: String = "snippet",
-                      @Query("mine") mine: Boolean = true): Single<String>
+                      @Query("mine") mine: Boolean = true,
+                      @Query("key") key: String,
+                      @Query("access_token") accessToken: String): Single<String>
 }

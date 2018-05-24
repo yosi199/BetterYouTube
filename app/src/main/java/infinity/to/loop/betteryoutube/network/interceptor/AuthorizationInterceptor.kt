@@ -10,14 +10,16 @@ import javax.inject.Inject
 
 class AuthorizationInterceptor @Inject constructor(private val preferences: SharedPreferences) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
-        val token = AuthState.jsonDeserialize(preferences.getString(SharedPreferenceKeys.userToken, null))
-        token?.let {
-            return chain.proceed(chain
-                    .request()
-                    .newBuilder()
-                    .addHeader("Authorization", AuthorizationResponse.TOKEN_TYPE_BEARER + ' ' + token.accessToken)
-                    .build())
-        }
+//        val token = AuthState.jsonDeserialize(preferences.getString(SharedPreferenceKeys.userToken, null))
+//        token?.let {
+//            val request = chain.proceed(chain
+//                    .request()
+//                    .newBuilder()
+//                    .addHeader("Authorization", AuthorizationResponse.TOKEN_TYPE_BEARER + ' ' + token.accessToken)
+//                    .build())
+//            request.request().toString()
+//            return request
+//        }
         return chain.proceed(chain.request())
     }
 }

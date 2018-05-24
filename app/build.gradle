@@ -5,10 +5,10 @@ apply plugin: 'kotlin-kapt'
 
 android {
     signingConfigs {
-        config {
+        debug {
             keyAlias 'myKey'
             keyPassword 'android'
-            storeFile file('C:/Users/Unknown/Documents/debug.keystore')
+            storeFile file('/Users/yosimizrachi/BetterYouTube/debug.keystore')
             storePassword 'android'
         }
     }

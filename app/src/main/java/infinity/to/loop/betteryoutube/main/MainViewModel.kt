@@ -5,10 +5,6 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.net.Uri
 import android.view.View
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.SignInButton
 import com.google.api.services.youtube.YouTubeScopes
 import infinity.to.loop.betteryoutube.R
 import infinity.to.loop.betteryoutube.home.HomeActivity
@@ -31,8 +27,7 @@ class MainViewModel @Inject constructor(private val context: Activity,
                 clientID,
                 ResponseTypeValues.CODE,
                 Uri.parse(context.getString(R.string.redirect_url)))
-                .setScope(YouTubeScopes.YOUTUBE)
-//                .setScope(context.getString(R.string.scopes))
+                .setScope("${YouTubeScopes.YOUTUBE} ${YouTubeScopes.YOUTUBE_READONLY} ${YouTubeScopes.YOUTUBE_FORCE_SSL} ${YouTubeScopes.YOUTUBE_UPLOAD}")
                 .build()
 
 
@@ -40,8 +35,9 @@ class MainViewModel @Inject constructor(private val context: Activity,
         completionIntent.putExtra("COMPLETE", true)
 
         authService.performAuthorizationRequest(authRequest,
-                PendingIntent.getActivity(v.context, 0, completionIntent, 0),
-                PendingIntent.getActivity(v.context, 0, Intent(v.context, MainActivity::class.java), 0))
+                PendingIntent.getActivity(v.context, 0, completionIntent, 0))
+
+        authService.dispose()
 
     }
 }

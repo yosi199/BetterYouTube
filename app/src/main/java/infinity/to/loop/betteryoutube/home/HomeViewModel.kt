@@ -14,20 +14,23 @@ import javax.inject.Inject
 
 class HomeViewModel @Inject constructor(private val context: Context,
                                         private val api: YouTubeApi,
+                                        private val clientId: String,
                                         private val configuration: AuthorizationServiceConfiguration,
                                         private val authState: AuthState,
                                         private val sharedPreferences: SharedPreferences,
                                         private val authService: AuthorizationService) {
 
     fun getUserPlaylists(v: View) {
-        api.userPlaylists()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                }, {
-                    Toast.makeText(context, it.localizedMessage, Toast.LENGTH_SHORT).show()
-                })
+        authState.performActionWithFreshTokens(authService, { accessToken, _, _ ->
+            api.userPlaylists(key = clientId, accessToken = accessToken!!)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                    }, {
+                        Toast.makeText(context, it.localizedMessage, Toast.LENGTH_SHORT).show()
+                    })
+        })
     }
 
     fun setIntent(intent: Intent?) {
@@ -46,7 +49,7 @@ class HomeViewModel @Inject constructor(private val context: Context,
         authService.performTokenRequest(response.createTokenExchangeRequest(),
                 { resp, ex ->
                     resp?.let {
-                        authState.update(resp, ex)
+                        authState.update(it, ex)
                         sharedPreferences
                                 .edit()
                                 .putString(SharedPreferenceKeys.userToken, authState.jsonSerializeString())

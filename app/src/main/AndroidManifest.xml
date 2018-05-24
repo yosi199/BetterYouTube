@@ -36,7 +36,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="infinity.to.loop.betteryoutube" />
+                <data android:scheme="infinity.to.loop.betteryoutube"/>
             </intent-filter>
         </activity>
     </application>

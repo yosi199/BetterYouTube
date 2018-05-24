@@ -33,10 +33,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:textColor="@android:color/white"
+            android:layout_margin="15dp"
+            android:alpha="0"
+            android:id="@+id/sign_in"
             android:background="@color/colorPrimary"
             android:onClick="@{viewModel::authenticate}"
-            android:text="Sign In" />
+            android:text="Sign In"
+            android:textColor="@android:color/white" />
 
     </FrameLayout>
 

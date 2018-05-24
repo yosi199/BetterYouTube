@@ -17,6 +17,7 @@ import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationServiceConfiguration
 import javax.inject.Inject
+import javax.inject.Named
 
 
 class HomeActivity : DaggerAppCompatActivity() {
@@ -49,11 +50,12 @@ class HomeActivity : DaggerAppCompatActivity() {
             @Provides
             fun viewModel(app: App,
                           youTubeApi: YouTubeApi,
+                          @Named("clientID") clientID: String,
                           configuration: AuthorizationServiceConfiguration,
                           authState: AuthState,
                           sharedPrefs: SharedPreferences,
                           authService: AuthorizationService): HomeViewModel {
-                return HomeViewModel(app, youTubeApi, configuration, authState, sharedPrefs, authService)
+                return HomeViewModel(app, youTubeApi, clientID, configuration, authState, sharedPrefs, authService)
             }
 
             @JvmStatic
