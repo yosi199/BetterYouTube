@@ -3,4 +3,5 @@
     <string name="authEndpoint" translatable="false">https://accounts.google.com/o/oauth2/v2/auth</string>
     <string name="tokenEndpoint" translatable="false">https://www.googleapis.com/oauth2/v4/token</string>
     <string name="redirect_url" translatable="false">infinity.to.loop.betteryoutube:/oauth2callback</string>
+    <!--<string name="redirect_url" translatable="false">infinity.to.loop.betteryoutube</string>-->
 </resources>

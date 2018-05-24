@@ -8,6 +8,8 @@ import android.view.View
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.SignInButton
+import com.google.api.services.youtube.YouTubeScopes
 import infinity.to.loop.betteryoutube.R
 import infinity.to.loop.betteryoutube.home.HomeActivity
 import net.openid.appauth.AuthState
@@ -22,23 +24,6 @@ class MainViewModel @Inject constructor(private val context: Activity,
                                         private val authState: AuthState,
                                         private val authService: AuthorizationService) {
 
-    lateinit var mGoogleSignInClient: GoogleSignInClient
-
-    init {
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build()
-
-        mGoogleSignInClient = GoogleSignIn.getClient(context, gso)
-
-    }
-
-    fun sign(v: View) {
-        val signInIntent = mGoogleSignInClient.signInIntent
-        context.startActivityForResult(signInIntent, 200)
-    }
-
-
     fun authenticate(v: View) {
 
         val authRequest = AuthorizationRequest.Builder(
@@ -46,7 +31,8 @@ class MainViewModel @Inject constructor(private val context: Activity,
                 clientID,
                 ResponseTypeValues.CODE,
                 Uri.parse(context.getString(R.string.redirect_url)))
-                .setScope(context.getString(R.string.scopes))
+                .setScope(YouTubeScopes.YOUTUBE)
+//                .setScope(context.getString(R.string.scopes))
                 .build()
 
 
@@ -54,7 +40,8 @@ class MainViewModel @Inject constructor(private val context: Activity,
         completionIntent.putExtra("COMPLETE", true)
 
         authService.performAuthorizationRequest(authRequest,
-                PendingIntent.getActivity(v.context, 0, completionIntent, 0))
+                PendingIntent.getActivity(v.context, 0, completionIntent, 0),
+                PendingIntent.getActivity(v.context, 0, Intent(v.context, MainActivity::class.java), 0))
 
     }
 }

@@ -14,7 +14,6 @@ import javax.inject.Inject
 
 class HomeViewModel @Inject constructor(private val context: Context,
                                         private val api: YouTubeApi,
-                                        private val apiKey: String,
                                         private val configuration: AuthorizationServiceConfiguration,
                                         private val authState: AuthState,
                                         private val sharedPreferences: SharedPreferences,

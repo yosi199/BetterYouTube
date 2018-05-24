@@ -2,6 +2,8 @@ package infinity.to.loop.betteryoutube.main
 
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.view.Window
+import android.view.WindowManager
 import dagger.Provides
 import dagger.Subcomponent
 import dagger.android.AndroidInjector
@@ -21,6 +23,8 @@ class MainActivity : DaggerAppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
+        this.window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
         binding.viewModel = viewModel
     }

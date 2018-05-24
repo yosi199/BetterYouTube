@@ -27,13 +27,7 @@ class AppModule {
     @Provides
     @Singleton
     @Named("clientID")
-    fun clientID() = "332154636196-h3at8sfd7494g4ac9pqqsn3sl5eloofo.apps.googleusercontent.com"
-
-    //TODO - security! must use a better obfuscated way to store the Oauth clientID
-    @Provides
-    @Singleton
-    @Named("apiKey")
-    fun apiKey() = "AIzaSyCGXHCXx6iGw2NVtBUgwdD7OjUYNVSCcGY"
+    fun clientID() = "534178296249-im13gnb2tcmb98jfs08jec89dsu50j6e.apps.googleusercontent.com"
 
     @Provides
     @Singleton
