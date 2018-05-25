@@ -5,7 +5,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.view.View
 import android.widget.Toast
-import infinity.to.loop.betteryoutube.network.interceptor.endpoints.YouTubeApi
+import infinity.to.loop.betteryoutube.network.endpoints.YouTubeApi
 import infinity.to.loop.betteryoutube.persistance.SharedPreferenceKeys
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -26,7 +26,7 @@ class HomeViewModel @Inject constructor(private val context: Context,
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
-                        Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, it.toString(), Toast.LENGTH_SHORT).show()
                     }, {
                         Toast.makeText(context, it.localizedMessage, Toast.LENGTH_SHORT).show()
                     })

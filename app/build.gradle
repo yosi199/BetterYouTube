@@ -8,7 +8,7 @@ android {
         debug {
             keyAlias 'myKey'
             keyPassword 'android'
-            storeFile file('/Users/yosimizrachi/BetterYouTube/debug.keystore')
+            storeFile file('C:/Users/Unknown/Documents/debug.keystore')
             storePassword 'android'
         }
     }

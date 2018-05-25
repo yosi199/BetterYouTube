@@ -12,7 +12,7 @@ import infinity.to.loop.betteryoutube.R
 import infinity.to.loop.betteryoutube.application.App
 import infinity.to.loop.betteryoutube.common.AuthConfigurationModule
 import infinity.to.loop.betteryoutube.databinding.ActivityHomeBinding
-import infinity.to.loop.betteryoutube.network.interceptor.endpoints.YouTubeApi
+import infinity.to.loop.betteryoutube.network.endpoints.YouTubeApi
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationServiceConfiguration
