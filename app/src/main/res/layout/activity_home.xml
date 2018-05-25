@@ -13,23 +13,22 @@
 
     </data>
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         tools:context=".main.MainActivity">
 
         <FrameLayout
-            android:id="@+id/youtube_container"
+            android:id="@+id/player_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <Button
+        <FrameLayout
+            android:id="@+id/content_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:onClick="@{viewModel::getUserPlaylists}"
-            android:text="Get Playlists!" />
+            android:layout_height="match_parent" />
 
-    </FrameLayout>
+    </LinearLayout>
 
 </layout>

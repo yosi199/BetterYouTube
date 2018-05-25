@@ -8,7 +8,7 @@ android {
         debug {
             keyAlias 'myKey'
             keyPassword 'android'
-            storeFile file('C:/Users/Unknown/Documents/debug.keystore')
+            storeFile file('/Users/yosimizrachi/BetterYouTube/debug.keystore')
             storePassword 'android'
         }
     }
@@ -78,4 +78,6 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:15.0.1'
     implementation project(':YouTubeAndroidPlayerApi')
     implementation 'com.google.apis:google-api-services-youtube:v3-rev202-1.18.0-rc'
+    implementation 'com.google.guava:guava:25.1-android'
+
 }

@@ -1,15 +1,13 @@
 import android.content.Context
 import android.content.SharedPreferences
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.MapperFeature
+
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.google.common.eventbus.EventBus
 import dagger.Module
 import dagger.Provides
 import infinity.to.loop.betteryoutube.R
 import infinity.to.loop.betteryoutube.application.App
-import infinity.to.loop.betteryoutube.network.endpoints.YouTubeApi
 import infinity.to.loop.betteryoutube.network.interceptor.AuthorizationInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -77,5 +75,9 @@ class AppModule {
     @Provides
     @Singleton
     fun sharedPreferences(context: Context): SharedPreferences = context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
+
+    @Provides
+    @Singleton
+    fun eventBus() = EventBus()
 
 }

@@ -1,4 +1,4 @@
-package infinity.to.loop.betteryoutube.home
+package infinity.to.loop.betteryoutube.home.playlists
 
 class PlaylistFragment : dagger.android.DaggerFragment() {
 

@@ -1,9 +1,6 @@
 package infinity.to.loop.betteryoutube.network.interceptor
 
 import android.content.SharedPreferences
-import infinity.to.loop.betteryoutube.persistance.SharedPreferenceKeys
-import net.openid.appauth.AuthState
-import net.openid.appauth.AuthorizationResponse
 import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
