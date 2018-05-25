@@ -8,7 +8,8 @@ import retrofit2.http.Query
 interface YouTubeApi {
 
     @GET("playlists")
-    fun userPlaylists(@Query("part") part: String = "snippet",
+    fun userPlaylists(@Query("part") part: String = "snippet,contentDetails",
+                      @Query("maxResults") maxResults: Int = 50,
                       @Query("mine") mine: Boolean = true,
                       @Query("key") key: String,
                       @Query("access_token") accessToken: String): Single<PlaylistsResponse>

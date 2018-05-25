@@ -8,6 +8,7 @@ import dagger.Module
 import dagger.Provides
 import infinity.to.loop.betteryoutube.R
 import infinity.to.loop.betteryoutube.application.App
+import infinity.to.loop.betteryoutube.network.endpoints.YouTubeApi
 import infinity.to.loop.betteryoutube.network.interceptor.AuthorizationInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

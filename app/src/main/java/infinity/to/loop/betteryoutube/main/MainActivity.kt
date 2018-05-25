@@ -1,7 +1,11 @@
 package infinity.to.loop.betteryoutube.main
 
+import android.arch.lifecycle.Observer
+import android.content.Intent
+import android.content.SharedPreferences
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -12,6 +16,7 @@ import dagger.android.support.DaggerAppCompatActivity
 import infinity.to.loop.betteryoutube.R
 import infinity.to.loop.betteryoutube.common.AuthConfigurationModule
 import infinity.to.loop.betteryoutube.databinding.ActivityMainBinding
+import infinity.to.loop.betteryoutube.home.HomeActivity
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationService
 import javax.inject.Inject
@@ -19,8 +24,7 @@ import javax.inject.Named
 
 class MainActivity : DaggerAppCompatActivity() {
 
-    @Inject
-    lateinit var viewModel: MainViewModel
+    @Inject lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,13 +34,35 @@ class MainActivity : DaggerAppCompatActivity() {
         val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
         binding.viewModel = viewModel
 
-        binding.signIn.animate()
-                .alpha(1f)
-                .setStartDelay(1000)
-                .setInterpolator(AccelerateDecelerateInterpolator())
-                .setDuration(500)
-                .start()
+        viewModel.authenticated.observe(this, Observer { authenticated ->
+            authenticated?.let {
+                if (it) {
+                    startActivity(Intent(this, HomeActivity::class.java))
+                    finish()
+                } else {
+                    binding.signIn.animate()
+                            .alpha(1f)
+                            .setStartDelay(1000)
+                            .setInterpolator(AccelerateDecelerateInterpolator())
+                            .setDuration(500)
+                            .start()
+                }
+            }
+        })
 
+        viewModel.loading.observe(this, Observer {
+            binding.signIn.visibility = View.GONE
+            binding.logo.animate()
+                    .scaleXBy(-1f)
+                    .scaleYBy(-1f)
+                    .setDuration(300)
+                    .setInterpolator(AccelerateDecelerateInterpolator())
+                    .start()
+        })
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        viewModel.onActivityResult(requestCode, resultCode, data)
     }
 
     @dagger.Module()
@@ -49,9 +75,10 @@ class MainActivity : DaggerAppCompatActivity() {
             @Provides
             fun viewModel(activity: MainActivity,
                           @Named("clientID") clientID: String,
-                          authState: AuthState,
-                          authService: AuthorizationService) =
-                    MainViewModel(activity, clientID, authState, authService)
+                          state: AuthState,
+                          service: AuthorizationService,
+                          sharedPrefs: SharedPreferences) =
+                    MainViewModel(activity, clientID, state, service, sharedPrefs)
         }
     }
 

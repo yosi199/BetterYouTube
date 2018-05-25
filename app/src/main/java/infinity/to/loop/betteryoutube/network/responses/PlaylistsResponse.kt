@@ -7,7 +7,7 @@ data class PlaylistsResponse(val kind: String?,
                              val nextPageToken: String?,
                              val prevPageToken: String?,
                              val pageInfo: PageInfo?,
-                             val items: List<Playlist>?)
+                             val items: List<Playlist>)
 
 data class PageInfo(val totalResults: Int?, val resultsPerPage: Int?)
 

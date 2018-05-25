@@ -24,18 +24,19 @@
             android:layout_height="wrap_content" />
 
         <ImageView
+            android:id="@+id/logo"
             android:layout_width="150dp"
             android:layout_height="80dp"
             android:layout_gravity="center"
             android:src="@drawable/yt_logo_rgb_light" />
 
         <Button
+            android:id="@+id/sign_in"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:layout_margin="15dp"
             android:alpha="0"
-            android:id="@+id/sign_in"
             android:background="@color/colorPrimary"
             android:onClick="@{viewModel::authenticate}"
             android:text="Sign In"
