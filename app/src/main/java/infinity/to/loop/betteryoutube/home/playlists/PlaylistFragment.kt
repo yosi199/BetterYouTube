@@ -1,10 +1,8 @@
 package infinity.to.loop.betteryoutube.home.playlists
 
-import android.arch.lifecycle.Observer
 import android.content.SharedPreferences
 import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +15,7 @@ import infinity.to.loop.betteryoutube.R
 import infinity.to.loop.betteryoutube.application.App
 import infinity.to.loop.betteryoutube.common.AuthConfigurationModule
 import infinity.to.loop.betteryoutube.databinding.FragPlaylistBinding
+import infinity.to.loop.betteryoutube.home.HomeActivity
 import infinity.to.loop.betteryoutube.network.endpoints.YouTubeApi
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationService
@@ -27,19 +26,21 @@ import javax.inject.Provider
 class PlaylistFragment : dagger.android.DaggerFragment() {
 
     @Inject lateinit var viewModel: PlaylistViewModel
+    private lateinit var binding: FragPlaylistBinding
 
     companion object {
         fun newInstance() = PlaylistFragment()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.frag_playlist, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.frag_playlist, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        val binding = DataBindingUtil.setContentView<FragPlaylistBinding>(activity, R.layout.frag_playlist)
+
         binding.viewModel = viewModel
-        viewModel.playlistsUpdate.observe(activity as AppCompatActivity, Observer {
+        viewModel.playlistsUpdate.observe(activity as HomeActivity, android.arch.lifecycle.Observer {
             it?.let {
                 binding.playlistList.layoutManager = LinearLayoutManager(activity)
                 binding.playlistList.adapter = PlaylistAdapter(it)

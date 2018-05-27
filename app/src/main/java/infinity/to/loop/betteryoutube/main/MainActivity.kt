@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
-import android.view.animation.AccelerateDecelerateInterpolator
 import dagger.Provides
 import dagger.Subcomponent
 import dagger.android.AndroidInjector
@@ -16,7 +15,6 @@ import dagger.android.support.DaggerAppCompatActivity
 import infinity.to.loop.betteryoutube.R
 import infinity.to.loop.betteryoutube.common.AuthConfigurationModule
 import infinity.to.loop.betteryoutube.databinding.ActivityMainBinding
-import infinity.to.loop.betteryoutube.home.HomeActivity
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationService
 import javax.inject.Inject
@@ -36,33 +34,23 @@ class MainActivity : DaggerAppCompatActivity() {
 
         viewModel.authenticated.observe(this, Observer { authenticated ->
             authenticated?.let {
-                if (it) {
-                    startActivity(Intent(this, HomeActivity::class.java))
-                    finish()
-                } else {
-                    binding.signIn.animate()
-                            .alpha(1f)
-                            .setStartDelay(1000)
-                            .setInterpolator(AccelerateDecelerateInterpolator())
-                            .setDuration(500)
-                            .start()
-                }
+                if (it) viewModel.startHomeScreen() else viewModel.animateSignInBtn(binding.signInBtn)
             }
         })
 
         viewModel.loading.observe(this, Observer {
-            binding.signIn.visibility = View.GONE
-            binding.logo.animate()
-                    .scaleXBy(-1f)
-                    .scaleYBy(-1f)
-                    .setDuration(300)
-                    .setInterpolator(AccelerateDecelerateInterpolator())
-                    .start()
+            binding.signInBtn.visibility = View.GONE
+            viewModel.animateToAuthScreen(binding.logo)
         })
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         viewModel.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModel.onStop()
     }
 
     @dagger.Module()

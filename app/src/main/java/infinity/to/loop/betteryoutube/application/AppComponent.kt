@@ -4,10 +4,11 @@ import dagger.android.AndroidInjector
 import dagger.android.support.AndroidSupportInjectionModule
 import infinity.to.loop.betteryoutube.ActivitiesBindingModule
 import infinity.to.loop.betteryoutube.application.App
+import infinity.to.loop.betteryoutube.common.LibraryModule
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [AndroidSupportInjectionModule::class, AppModule::class, ActivitiesBindingModule::class])
+@Component(modules = [AndroidSupportInjectionModule::class, AppModule::class, LibraryModule::class, ActivitiesBindingModule::class])
 interface AppComponent : AndroidInjector<App> {
     @Component.Builder
     interface Builder {
