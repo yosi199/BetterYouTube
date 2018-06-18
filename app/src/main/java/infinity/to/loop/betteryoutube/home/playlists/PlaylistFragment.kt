@@ -1,5 +1,6 @@
 package infinity.to.loop.betteryoutube.home.playlists
 
+import android.arch.lifecycle.Observer
 import android.content.SharedPreferences
 import android.databinding.DataBindingUtil
 import android.os.Bundle
@@ -7,25 +8,28 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.google.common.eventbus.EventBus
+import com.google.api.services.youtube.YouTube
 import dagger.Provides
 import dagger.Subcomponent
 import dagger.android.AndroidInjector
+import dagger.android.DaggerFragment
 import infinity.to.loop.betteryoutube.R
 import infinity.to.loop.betteryoutube.application.App
 import infinity.to.loop.betteryoutube.common.AuthConfigurationModule
 import infinity.to.loop.betteryoutube.databinding.FragPlaylistBinding
 import infinity.to.loop.betteryoutube.home.HomeActivity
-import infinity.to.loop.betteryoutube.network.endpoints.YouTubeApi
+import infinity.to.loop.betteryoutube.home.playlists.playlist.item.PlaylistItemFragment
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationService
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Provider
 
-class PlaylistFragment : dagger.android.DaggerFragment() {
+
+class PlaylistFragment : DaggerFragment() {
 
     @Inject lateinit var viewModel: PlaylistViewModel
+    @Inject lateinit var playlistItemFragment: Provider<PlaylistItemFragment>
     private lateinit var binding: FragPlaylistBinding
 
     companion object {
@@ -40,11 +44,23 @@ class PlaylistFragment : dagger.android.DaggerFragment() {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
 
         binding.viewModel = viewModel
-        viewModel.playlistsUpdate.observe(activity as HomeActivity, android.arch.lifecycle.Observer {
+        viewModel.playlistUpdate.observe(activity as HomeActivity, Observer {
             it?.let {
                 binding.playlistList.layoutManager = LinearLayoutManager(activity)
-                binding.playlistList.adapter = PlaylistAdapter(it)
+                binding.playlistList.adapter = PlaylistAdapter(it, viewModel)
             }
+        })
+
+        viewModel.chosenPlaylistId.observe(activity as HomeActivity, Observer {
+            val fragment = playlistItemFragment.get()
+            val bundle = Bundle()
+            bundle.putString(PlaylistItemFragment.ARG_KEY_ID, it)
+            fragment.arguments = bundle
+            fragmentManager.beginTransaction()
+                    .add(R.id.fragment_container, fragment)
+                    .addToBackStack("Tag")
+                    .commit()
+
         })
     }
 
@@ -57,20 +73,24 @@ class PlaylistFragment : dagger.android.DaggerFragment() {
             @JvmStatic
             @Provides
             fun viewModel(app: App,
-                          eventBus: EventBus,
-                          youTubeApi: YouTubeApi,
+                          youTube: YouTube,
                           @Named("clientID") clientID: String,
                           sharedPrefs: SharedPreferences,
                           authState: Provider<AuthState?>,
                           authService: AuthorizationService): PlaylistViewModel {
 
                 return PlaylistViewModel(app,
-                        youTubeApi,
+                        youTube,
                         clientID,
                         sharedPrefs,
                         authState,
                         authService)
             }
+        }
+
+        @Provides
+        fun playlistItemFragment(): PlaylistItemFragment {
+            return PlaylistItemFragment.newInstance()
         }
     }
 

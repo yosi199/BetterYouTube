@@ -15,4 +15,25 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="AppProgressBar" parent="@style/Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:progressDrawable">@drawable/progress</item>
+        <item name="android:indeterminateDrawable">@drawable/progress</item>
+        <item name="android:indeterminateDuration">1000</item>
+        <item name="android:minWidth">200dp</item>
+    </style>
+
+    <style name="Title" parent="android:Widget.TextView">
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">@dimen/title_text_size</item>
+    </style>
+
+    <style name="Description" parent="android:Widget.TextView">
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:textColor">@android:color/darker_gray</item>
+        <item name="android:textSize">@dimen/description_text_size_text_size</item>
+    </style>
+
 </resources>

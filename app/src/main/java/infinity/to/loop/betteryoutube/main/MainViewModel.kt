@@ -98,13 +98,17 @@ class MainViewModel @Inject constructor(private val context: Activity,
         logoAnimation.addUpdateListener { anim ->
             val value = anim.animatedValue as Float
             logo.scaleX = value
-            if (value == 0f) startAuthScreen()
+            if (value == 0f) {
+
+                startAuthScreen()
+            }
         }
         logoAnimation.start()
     }
 
     private fun startAuthScreen() {
         context.startActivityForResult(authIntent, MainViewModel.AUTH_REQ)
+        context.overridePendingTransition(R.anim.slide_out, R.anim.stay)
     }
 
     fun startHomeScreen() {

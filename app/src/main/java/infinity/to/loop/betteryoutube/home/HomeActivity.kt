@@ -1,14 +1,16 @@
 package infinity.to.loop.betteryoutube.home
 
 import android.arch.lifecycle.Observer
+import android.content.Intent
 import android.content.SharedPreferences
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.os.Handler
+import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBar
 import android.view.Gravity
+import android.view.MenuItem
 import android.widget.Toast
-import com.google.android.youtube.player.YouTubePlayerFragment
 import dagger.Provides
 import dagger.Subcomponent
 import dagger.android.AndroidInjector
@@ -27,9 +29,11 @@ class HomeActivity : DaggerAppCompatActivity() {
     @Inject lateinit var viewModel: HomeViewModel
     @Inject lateinit var playlistFragment: PlaylistFragment
 
+    private lateinit var binding: ActivityHomeBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = DataBindingUtil.setContentView<ActivityHomeBinding>(this, R.layout.activity_home)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_home)
         binding.viewModel = viewModel
 
         fragmentManager
@@ -57,6 +61,27 @@ class HomeActivity : DaggerAppCompatActivity() {
         viewModel.openDrawer.observe(this, Observer {
             it?.let { if (it) binding.drawer.openDrawer(Gravity.START) }
         })
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == 201) {
+
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.onResume()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                binding.drawer.openDrawer(GravityCompat.START)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     @dagger.Module()

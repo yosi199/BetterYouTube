@@ -14,12 +14,15 @@ class HomeViewModel @Inject constructor(private val sharedPrefs: SharedPreferenc
                                         private val state: AuthState,
                                         private val service: AuthorizationService,
                                         private val configuration: AuthorizationServiceConfiguration) {
-
     val openDrawer = MutableLiveData<Boolean>()
 
-    init {
-        val firstTime = sharedPrefs.getBoolean(SharedPreferenceKeys.firstTime, false)
-        handler.postDelayed({ openDrawer.postValue(firstTime) }, 500)
+    fun onResume() {
+        maybeFirstTime()
     }
 
+    private fun maybeFirstTime() {
+        val firstTime = sharedPrefs.getBoolean(SharedPreferenceKeys.firstTime, false)
+        handler.postDelayed({ openDrawer.postValue(firstTime) }, 1500)
+        sharedPrefs.edit().putBoolean(SharedPreferenceKeys.firstTime, false).apply()
+    }
 }

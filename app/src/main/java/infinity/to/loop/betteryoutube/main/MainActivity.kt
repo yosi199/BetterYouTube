@@ -34,7 +34,11 @@ class MainActivity : DaggerAppCompatActivity() {
 
         viewModel.authenticated.observe(this, Observer { authenticated ->
             authenticated?.let {
-                if (it) viewModel.startHomeScreen() else viewModel.animateSignInBtn(binding.signInBtn)
+                if (it) {
+                    //TODO - create custom progress bar view
+                    binding.loader.visibility = View.VISIBLE
+                    viewModel.startHomeScreen()
+                } else viewModel.animateSignInBtn(binding.signInBtn)
             }
         })
 
@@ -42,6 +46,7 @@ class MainActivity : DaggerAppCompatActivity() {
             binding.signInBtn.visibility = View.GONE
             viewModel.animateToAuthScreen(binding.logo)
         })
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

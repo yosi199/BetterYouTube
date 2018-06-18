@@ -5,6 +5,7 @@ import dagger.android.ContributesAndroidInjector
 import infinity.to.loop.betteryoutube.common.AuthConfigurationModule
 import infinity.to.loop.betteryoutube.home.HomeActivity
 import infinity.to.loop.betteryoutube.home.playlists.PlaylistFragment
+import infinity.to.loop.betteryoutube.home.playlists.playlist.item.PlaylistItemFragment
 import infinity.to.loop.betteryoutube.main.MainActivity
 
 
@@ -21,5 +22,8 @@ abstract class ActivitiesBindingModule {
     // Fragments
     @ContributesAndroidInjector(modules = [PlaylistFragment.Module::class, AuthConfigurationModule::class])
     abstract fun playlistsFragment(): PlaylistFragment
+
+    @ContributesAndroidInjector(modules = [PlaylistItemFragment.Module::class, AuthConfigurationModule::class])
+    abstract fun playlistItemFragment(): PlaylistItemFragment
 
 }

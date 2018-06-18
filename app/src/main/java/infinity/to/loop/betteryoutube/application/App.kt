@@ -1,5 +1,6 @@
 package infinity.to.loop.betteryoutube.application
 
+import DaggerAppComponent
 import dagger.android.AndroidInjector
 import dagger.android.DaggerApplication
 

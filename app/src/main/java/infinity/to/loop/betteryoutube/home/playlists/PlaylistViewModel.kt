@@ -4,8 +4,9 @@ import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import android.content.SharedPreferences
 import android.widget.Toast
-import infinity.to.loop.betteryoutube.network.endpoints.YouTubeApi
-import infinity.to.loop.betteryoutube.network.responses.PlaylistsResponse
+import com.google.api.services.youtube.YouTube
+import com.google.api.services.youtube.model.PlaylistListResponse
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import net.openid.appauth.AuthState
@@ -14,13 +15,15 @@ import javax.inject.Inject
 import javax.inject.Provider
 
 class PlaylistViewModel @Inject constructor(private val context: Context,
-                                            private val api: YouTubeApi,
+                                            private val youtube: YouTube,
                                             private val clientId: String,
                                             private val sharedPreferences: SharedPreferences,
                                             private val authState: Provider<AuthState?>,
-                                            private val authService: AuthorizationService) {
+                                            private val authService: AuthorizationService) : PlaylistActionListener {
 
-    val playlistsUpdate = MutableLiveData<PlaylistsResponse>()
+
+    val playlistUpdate = MutableLiveData<PlaylistListResponse>()
+    val chosenPlaylistId = MutableLiveData<String>()
 
     init {
         getUserPlaylist()
@@ -28,14 +31,28 @@ class PlaylistViewModel @Inject constructor(private val context: Context,
 
     private fun getUserPlaylist() {
         authState.get()?.performActionWithFreshTokens(authService, { accessToken, _, _ ->
-            api.userPlaylists(key = clientId, accessToken = accessToken!!)
+
+            val request = youtube.playlists().list("snippet,contentDetails")
+            request.mine = true
+            request.key = clientId
+            request.oauthToken = accessToken
+
+
+            Single.just(request)
                     .subscribeOn(Schedulers.io())
+                    .map { request.execute() }
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
-                        playlistsUpdate.postValue(it)
+                        it.etag
+                        playlistUpdate.postValue(it)
                     }, {
                         Toast.makeText(context, it.localizedMessage, Toast.LENGTH_SHORT).show()
                     })
+
         })
+    }
+
+    override fun clickedItem(id: String) {
+        chosenPlaylistId.postValue(id)
     }
 }

@@ -4,11 +4,14 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.google.api.client.http.HttpRequestInitializer
+import com.google.api.client.http.javanet.NetHttpTransport
+import com.google.api.client.json.jackson.JacksonFactory
+import com.google.api.services.youtube.YouTube
 import com.google.common.eventbus.EventBus
 import dagger.Module
 import dagger.Provides
 import infinity.to.loop.betteryoutube.R
-import infinity.to.loop.betteryoutube.network.endpoints.YouTubeApi
 import infinity.to.loop.betteryoutube.network.interceptor.AuthorizationInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -61,9 +64,13 @@ class LibraryModule {
 
     @Provides
     @Singleton
-    fun youtubeApi(retrofit: Retrofit): YouTubeApi = retrofit.create(YouTubeApi::class.java)
+    fun eventBus() = EventBus()
 
     @Provides
     @Singleton
-    fun eventBus() = EventBus()
+    fun youTube(): YouTube {
+        return YouTube
+                .Builder(NetHttpTransport(), JacksonFactory(), HttpRequestInitializer {})
+                .build()
+    }
 }

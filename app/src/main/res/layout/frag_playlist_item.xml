@@ -4,11 +4,11 @@
 
     <data>
 
-        <import type="infinity.to.loop.betteryoutube.home.playlists.PlaylistViewModel" />
+        <import type="infinity.to.loop.betteryoutube.home.playlists.playlist.item.PlaylistItemViewModel" />
 
         <variable
             name="viewModel"
-            type="infinity.to.loop.betteryoutube.home.playlists.PlaylistViewModel" />
+            type="infinity.to.loop.betteryoutube.home.playlists.playlist.item.PlaylistItemViewModel" />
     </data>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -18,7 +18,7 @@
         android:orientation="vertical">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/playlist_list"
+            android:id="@+id/playlist_item_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
