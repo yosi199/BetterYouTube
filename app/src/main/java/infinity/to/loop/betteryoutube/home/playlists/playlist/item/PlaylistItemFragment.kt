@@ -11,8 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.youtube.player.YouTubeInitializationResult
 import com.google.android.youtube.player.YouTubePlayer
-import com.google.android.youtube.player.YouTubePlayerFragment
-
 import com.google.api.services.youtube.YouTube
 import dagger.Provides
 import dagger.Subcomponent
@@ -23,6 +21,8 @@ import infinity.to.loop.betteryoutube.application.App
 import infinity.to.loop.betteryoutube.common.AuthConfigurationModule
 import infinity.to.loop.betteryoutube.databinding.FragPlaylistItemBinding
 import infinity.to.loop.betteryoutube.home.HomeActivity
+import infinity.to.loop.betteryoutube.player.CustomYouTubePlayer
+import infinity.to.loop.betteryoutube.player.PlayerActivity
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationService
 import javax.inject.Inject
@@ -33,7 +33,7 @@ class PlaylistItemFragment : DaggerFragment() {
 
     @Inject @Named("clientID") lateinit var clientID: String
     @Inject lateinit var viewModel: PlaylistItemViewModel
-    @Inject lateinit var playerProvider: Provider<YouTubePlayerFragment>
+    @Inject lateinit var playerProvider: Provider<CustomYouTubePlayer>
     private lateinit var binding: FragPlaylistItemBinding
 
     companion object {
@@ -60,23 +60,26 @@ class PlaylistItemFragment : DaggerFragment() {
 
         viewModel.trackSelection.observe(activity as HomeActivity, Observer {
             it?.let { video ->
-                val fragment = playerProvider.get()
-                fragmentManager
-                        .beginTransaction()
-                        .add(R.id.fragment_container, fragment)
-                        .commit()
 
-                fragment.initialize(clientID, object : YouTubePlayer.OnInitializedListener {
+                PlayerActivity.start(activity, video)
 
-                    override fun onInitializationSuccess(provider: YouTubePlayer.Provider?, player: YouTubePlayer?, wasRestored: Boolean) {
-                        player?.let { player.loadVideo(video) }
-                    }
+//                val fragment = playerProvider.get()
+//                fragmentManager
+//                        .beginTransaction()
+//                        .add(R.id.fragment_container, fragment)
+//                        .commit()
 
-                    override fun onInitializationFailure(provider: YouTubePlayer.Provider?, error: YouTubeInitializationResult?) {
-                        Log.e("ERROR", error.toString())
-                        error?.getErrorDialog(activity as HomeActivity, 201)?.show()
-                    }
-                })
+//                fragment.initialize(clientID, object : YouTubePlayer.OnInitializedListener {
+//
+//                    override fun onInitializationSuccess(provider: YouTubePlayer.Provider?, player: YouTubePlayer?, wasRestored: Boolean) {
+//                        player?.let { player.loadVideo(video) }
+//                    }
+//
+//                    override fun onInitializationFailure(provider: YouTubePlayer.Provider?, error: YouTubeInitializationResult?) {
+//                        Log.e("ERROR", error.toString())
+//                        error?.getErrorDialog(activity as HomeActivity, 201)?.show()
+//                    }
+//                })
             }
         })
     }
@@ -108,8 +111,6 @@ class PlaylistItemFragment : DaggerFragment() {
         @Provides
         fun clientId(@Named("clientID") clientID: String) = clientID
 
-        @Provides
-        fun youtubeFragment(): YouTubePlayerFragment = YouTubePlayerFragment.newInstance()
     }
 
     @Subcomponent(modules = [Module::class, AuthConfigurationModule::class])

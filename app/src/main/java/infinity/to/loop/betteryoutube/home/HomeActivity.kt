@@ -1,15 +1,16 @@
 package infinity.to.loop.betteryoutube.home
 
 import android.arch.lifecycle.Observer
-import android.content.Intent
 import android.content.SharedPreferences
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBar
+import android.util.Log
 import android.view.Gravity
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.widget.Toast
 import dagger.Provides
 import dagger.Subcomponent
@@ -19,15 +20,18 @@ import infinity.to.loop.betteryoutube.R
 import infinity.to.loop.betteryoutube.common.AuthConfigurationModule
 import infinity.to.loop.betteryoutube.databinding.ActivityHomeBinding
 import infinity.to.loop.betteryoutube.home.playlists.PlaylistFragment
+import infinity.to.loop.betteryoutube.player.CustomYouTubePlayer
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationServiceConfiguration
 import javax.inject.Inject
 
+
 class HomeActivity : DaggerAppCompatActivity() {
 
     @Inject lateinit var viewModel: HomeViewModel
     @Inject lateinit var playlistFragment: PlaylistFragment
+    @Inject lateinit var customYouTubePlayer: CustomYouTubePlayer
 
     private lateinit var binding: ActivityHomeBinding
 
@@ -49,7 +53,6 @@ class HomeActivity : DaggerAppCompatActivity() {
             this.show()
         }
 
-
         binding.navView.setNavigationItemSelectedListener { menuItem ->
             menuItem.isChecked = true
             binding.drawer.closeDrawers()
@@ -58,15 +61,15 @@ class HomeActivity : DaggerAppCompatActivity() {
             true
         }
 
+        viewModel.background.observe(this, Observer {
+            finish()
+        })
+
+
         viewModel.openDrawer.observe(this, Observer {
             it?.let { if (it) binding.drawer.openDrawer(Gravity.START) }
         })
-    }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == 201) {
-
-        }
     }
 
     override fun onResume() {

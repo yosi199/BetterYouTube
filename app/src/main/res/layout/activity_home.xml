@@ -44,7 +44,17 @@
                 android:id="@+id/fragment_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@+id/appbar_layout" />
+                android:layout_below="@+id/appbar_layout">
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/floatingBtn"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="bottom|end"
+                    android:onClick="@{viewModel::goToBackground}"
+                    android:layout_margin="20dp"
+                    android:src="@drawable/common_full_open_on_phone" />
+            </FrameLayout>
         </RelativeLayout>
 
 

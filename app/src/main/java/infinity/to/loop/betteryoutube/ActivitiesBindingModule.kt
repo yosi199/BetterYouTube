@@ -7,6 +7,7 @@ import infinity.to.loop.betteryoutube.home.HomeActivity
 import infinity.to.loop.betteryoutube.home.playlists.PlaylistFragment
 import infinity.to.loop.betteryoutube.home.playlists.playlist.item.PlaylistItemFragment
 import infinity.to.loop.betteryoutube.main.MainActivity
+import infinity.to.loop.betteryoutube.player.PlayerActivity
 
 
 @Module
@@ -18,6 +19,9 @@ abstract class ActivitiesBindingModule {
 
     @ContributesAndroidInjector(modules = [HomeActivity.Module::class, AuthConfigurationModule::class])
     abstract fun homeActivity(): HomeActivity
+
+    @ContributesAndroidInjector(modules = [PlayerActivity.Module::class, AuthConfigurationModule::class])
+    abstract fun playerActivity(): PlayerActivity
 
     // Fragments
     @ContributesAndroidInjector(modules = [PlaylistFragment.Module::class, AuthConfigurationModule::class])

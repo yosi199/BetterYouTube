@@ -13,6 +13,7 @@ import dagger.Module
 import dagger.Provides
 import infinity.to.loop.betteryoutube.R
 import infinity.to.loop.betteryoutube.network.interceptor.AuthorizationInterceptor
+import infinity.to.loop.betteryoutube.player.CustomYouTubePlayer
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -73,4 +74,8 @@ class LibraryModule {
                 .Builder(NetHttpTransport(), JacksonFactory(), HttpRequestInitializer {})
                 .build()
     }
+
+    @Provides
+    @Singleton
+    fun youtubePlayerFragment() = CustomYouTubePlayer()
 }
