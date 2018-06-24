@@ -7,7 +7,6 @@ import android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.util.Log
-import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.WindowManager
 import com.google.android.youtube.player.YouTubeInitializationResult
@@ -19,49 +18,23 @@ import dagger.android.support.DaggerAppCompatActivity
 import infinity.to.loop.betteryoutube.R
 import infinity.to.loop.betteryoutube.common.AuthConfigurationModule
 import infinity.to.loop.betteryoutube.databinding.ActivityPlayerBinding
-import infinity.to.loop.betteryoutube.home.HomeActivity
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Provider
 
-class PlayerActivity : DaggerAppCompatActivity(), GestureDetector.OnGestureListener {
-    override fun onShowPress(e: MotionEvent?) {
-    }
-
-    override fun onSingleTapUp(e: MotionEvent?): Boolean {
-        return true
-    }
-
-    override fun onDown(e: MotionEvent?): Boolean {
-        return true
-
-    }
-
-    override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float): Boolean {
-        return true
-
-    }
-
-    override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
-        return true
-
-    }
-
-    override fun onLongPress(ev: MotionEvent) {
-        Log.d(HomeActivity::class.java.name, "X ${ev.rawX} Y ${ev.rawY}")
-        val params = window.attributes
-        params.x = ev.x.toInt()
-        params.y = ev.y.toInt()
-        window.attributes = params
-
-    }
+class PlayerActivity : DaggerAppCompatActivity() {
 
     @Inject @Named("clientID") lateinit var clientID: String
     @Inject lateinit var viewModel: PlayerViewModel
     @Inject lateinit var playerProvider: Provider<CustomYouTubePlayer>
 
     private lateinit var binding: ActivityPlayerBinding
-    private lateinit var gestureDetector: GestureDetector
+
+    private var mCurrentX: Int = 0
+    private var mCurrentY: Int = 0
+
+    private var mDx: Int = 0
+    private var mDy: Int = 0
 
     companion object {
         fun start(context: Context, video: String) {
@@ -80,8 +53,6 @@ class PlayerActivity : DaggerAppCompatActivity(), GestureDetector.OnGestureListe
 
         val video = intent.getStringExtra("video")
         val fragment = playerProvider.get()
-
-        gestureDetector = GestureDetector(this, this)
 
         fragmentManager
                 .beginTransaction()
@@ -112,17 +83,26 @@ class PlayerActivity : DaggerAppCompatActivity(), GestureDetector.OnGestureListe
         window.attributes = params
     }
 
-//    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-//        Log.d(HomeActivity::class.java.name, "X ${ev.rawX} Y ${ev.rawY}")
-//        val params = window.attributes
-//        params.x = ev.x.toInt()
-//        params.y = ev.y.toInt()
-//        window.attributes = params
-//        return super.dispatchTouchEvent(ev)
-//    }
 
-    override fun onResume() {
-        super.onResume()
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        when (ev.action.and(MotionEvent.ACTION_MASK)) {
+            MotionEvent.ACTION_DOWN -> {
+                mDx = mCurrentX - ev.rawX.toInt()
+                mDy = mCurrentY - ev.rawY.toInt()
+            }
+            MotionEvent.ACTION_MOVE -> {
+                val params = window.attributes
+
+                mCurrentX = (ev.rawX + mDx).toInt()
+                mCurrentY = (ev.rawY + mDy).toInt()
+
+                params.x = mCurrentX
+                params.y = mCurrentY
+                window.attributes = params
+
+            }
+        }
+        return true
     }
 
     @dagger.Module()

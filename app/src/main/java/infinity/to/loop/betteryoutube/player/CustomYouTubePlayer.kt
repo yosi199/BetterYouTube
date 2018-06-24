@@ -92,6 +92,6 @@ class CustomYouTubePlayer : YouTubePlayerFragment() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "onDestroy")
-
     }
+
 }
