@@ -7,10 +7,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBar
-import android.util.Log
 import android.view.Gravity
 import android.view.MenuItem
-import android.view.MotionEvent
 import android.widget.Toast
 import dagger.Provides
 import dagger.Subcomponent
@@ -60,11 +58,6 @@ class HomeActivity : DaggerAppCompatActivity() {
             Toast.makeText(this, "Clicked ${menuItem.title}", Toast.LENGTH_SHORT).show()
             true
         }
-
-        viewModel.background.observe(this, Observer {
-            finish()
-        })
-
 
         viewModel.openDrawer.observe(this, Observer {
             it?.let { if (it) binding.drawer.openDrawer(Gravity.START) }

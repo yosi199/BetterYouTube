@@ -16,14 +16,9 @@ class HomeViewModel @Inject constructor(private val sharedPrefs: SharedPreferenc
                                         private val service: AuthorizationService,
                                         private val configuration: AuthorizationServiceConfiguration) {
     val openDrawer = MutableLiveData<Boolean>()
-    val background = MutableLiveData<Boolean>()
 
     fun onResume() {
         maybeFirstTime()
-    }
-
-    fun goToBackground(v: View) {
-        background.postValue(true)
     }
 
     private fun maybeFirstTime() {
