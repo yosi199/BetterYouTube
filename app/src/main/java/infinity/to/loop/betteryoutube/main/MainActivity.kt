@@ -8,6 +8,9 @@ import android.os.Bundle
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
+import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import dagger.Provides
 import dagger.Subcomponent
 import dagger.android.AndroidInjector
@@ -35,6 +38,7 @@ class MainActivity : DaggerAppCompatActivity() {
         viewModel.authenticated.observe(this, Observer { authenticated ->
             authenticated?.let {
                 if (it) {
+                    FirebaseDatabase.getInstance()
                     //TODO - create custom progress bar view
                     binding.loader.visibility = View.VISIBLE
                     binding.root.postDelayed({
@@ -48,7 +52,6 @@ class MainActivity : DaggerAppCompatActivity() {
             binding.signInBtn.visibility = View.GONE
             viewModel.animateToAuthScreen(binding.logo)
         })
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

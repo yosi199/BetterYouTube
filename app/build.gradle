@@ -84,4 +84,12 @@ dependencies {
     implementation 'com.google.guava:guava:25.1-android'
     implementation files('/Users/yosimizrachi/Downloads/YouTubeAndroidPlayerApi-1.2.2.zip')
     implementation files('/Users/yosimizrachi/Downloads/YouTubeAndroidPlayerApi-1.2.2/libs/YouTubeAndroidPlayerApi.jar')
+
+    // Firebase
+    implementation'com.google.firebase:firebase-core:16.0.1'
+    implementation 'com.google.firebase:firebase-database:16.0.1'
+    implementation 'com.google.firebase:firebase-auth:16.0.2'
+
 }
+
+apply plugin: 'com.google.gms.google-services'
