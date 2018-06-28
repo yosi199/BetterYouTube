@@ -2,4 +2,5 @@
     <string name="app_name">BetterYouTube</string>
     <string name="data_api">https://www.googleapis.com/youtube/v3/</string>
     <string name="menu_item_library">Library</string>
+    <string name="my_playlists">My Playlists</string>
 </resources>
