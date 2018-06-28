@@ -30,7 +30,7 @@ class PlaylistViewModel @Inject constructor(private val context: Context,
     }
 
     private fun getUserPlaylist() {
-        authState.get()?.performActionWithFreshTokens(authService, { accessToken, _, _ ->
+        authState.get()?.performActionWithFreshTokens(authService) { accessToken, _, _ ->
 
             val request = youtube.playlists().list("snippet,contentDetails")
             request.mine = true
@@ -49,7 +49,7 @@ class PlaylistViewModel @Inject constructor(private val context: Context,
                         Toast.makeText(context, it.localizedMessage, Toast.LENGTH_SHORT).show()
                     })
 
-        })
+        }
     }
 
     override fun clickedItem(id: String) {

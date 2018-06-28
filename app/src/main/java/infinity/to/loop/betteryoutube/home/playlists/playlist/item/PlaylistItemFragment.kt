@@ -60,26 +60,7 @@ class PlaylistItemFragment : DaggerFragment() {
 
         viewModel.trackSelection.observe(activity as HomeActivity, Observer {
             it?.let { video ->
-
                 PlayerActivity.start(activity, video)
-
-//                val fragment = playerProvider.get()
-//                fragmentManager
-//                        .beginTransaction()
-//                        .add(R.id.fragment_container, fragment)
-//                        .commit()
-
-//                fragment.initialize(clientID, object : YouTubePlayer.OnInitializedListener {
-//
-//                    override fun onInitializationSuccess(provider: YouTubePlayer.Provider?, player: YouTubePlayer?, wasRestored: Boolean) {
-//                        player?.let { player.loadVideo(video) }
-//                    }
-//
-//                    override fun onInitializationFailure(provider: YouTubePlayer.Provider?, error: YouTubeInitializationResult?) {
-//                        Log.e("ERROR", error.toString())
-//                        error?.getErrorDialog(activity as HomeActivity, 201)?.show()
-//                    }
-//                })
             }
         })
     }

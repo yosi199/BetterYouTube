@@ -30,7 +30,7 @@ class PlaylistItemViewModel @Inject constructor(private val context: Context,
     }
 
     fun load(playlistId: String) {
-        state.get()?.performActionWithFreshTokens(service, { accessToken, _, _ ->
+        state.get()?.performActionWithFreshTokens(service) { accessToken, _, _ ->
             val request = api.playlistItems().list("snippet,contentDetails")
             request.playlistId = playlistId
             request.key = clientId
@@ -46,7 +46,7 @@ class PlaylistItemViewModel @Inject constructor(private val context: Context,
                     }, {
                         Log.e(TAG, "Couldn't fetch playlist ${it.message}")
                     })
-        })
+        }
     }
 
     override fun clickedItem(id: String) {

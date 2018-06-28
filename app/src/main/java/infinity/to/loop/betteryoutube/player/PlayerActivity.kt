@@ -4,18 +4,15 @@ import android.animation.ObjectAnimator
 import android.arch.lifecycle.Observer
 import android.content.Context
 import android.content.Intent
-import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-import android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+import android.content.Intent.*
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
-import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewTreeObserver
 import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
 import android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-import android.view.animation.AccelerateDecelerateInterpolator
 import com.google.android.youtube.player.YouTubeInitializationResult
 import com.google.android.youtube.player.YouTubePlayer
 import dagger.Provides
@@ -25,15 +22,17 @@ import dagger.android.support.DaggerAppCompatActivity
 import infinity.to.loop.betteryoutube.R
 import infinity.to.loop.betteryoutube.common.AuthConfigurationModule
 import infinity.to.loop.betteryoutube.databinding.ActivityPlayerBinding
+import infinity.to.loop.betteryoutube.utils.newLocationAnimator
+import infinity.to.loop.betteryoutube.utils.scaleAnimatorX
+import infinity.to.loop.betteryoutube.utils.scaleAnimatorY
 import javax.inject.Inject
 import javax.inject.Named
-import javax.inject.Provider
 
-class PlayerActivity : DaggerAppCompatActivity(), ViewTreeObserver.OnGlobalLayoutListener {
+class PlayerActivity : DaggerAppCompatActivity(), ViewTreeObserver.OnGlobalLayoutListener, YouTubePlayer.OnInitializedListener {
 
     @Inject @Named("clientID") lateinit var clientID: String
     @Inject lateinit var viewModel: PlayerViewModel
-    @Inject lateinit var playerProvider: Provider<CustomYouTubePlayer>
+    @Inject lateinit var playerProvider: CustomYouTubePlayer
 
     private lateinit var binding: ActivityPlayerBinding
 
@@ -46,8 +45,8 @@ class PlayerActivity : DaggerAppCompatActivity(), ViewTreeObserver.OnGlobalLayou
     companion object {
         fun start(context: Context, video: String) {
             val intent = Intent(context, PlayerActivity::class.java)
-            intent.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_REORDER_TO_FRONT
-            intent.putExtra("video", video);
+            intent.flags = FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS or FLAG_ACTIVITY_CLEAR_TOP or FLAG_ACTIVITY_NO_HISTORY
+            intent.putExtra("video", video)
             context.startActivity(intent)
         }
     }
@@ -56,35 +55,30 @@ class PlayerActivity : DaggerAppCompatActivity(), ViewTreeObserver.OnGlobalLayou
     private lateinit var minimizeScaleXAnimator: ObjectAnimator
     private lateinit var minimizeScaleYAnimator: ObjectAnimator
 
+    private var video: String? = null
+    private var player: YouTubePlayer? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_player)
         binding.viewModel = viewModel
         setWindowParams(MATCH_PARENT, MATCH_PARENT)
 
-        val video = intent.getStringExtra("video")
-        val fragment = playerProvider.get()
-
         fragmentManager
                 .beginTransaction()
-                .add(R.id.fragment_container, fragment)
+                .replace(R.id.fragment_container, playerProvider)
                 .commit()
 
-        fragment.initialize(clientID, object : YouTubePlayer.OnInitializedListener {
-
-            override fun onInitializationSuccess(provider: YouTubePlayer.Provider?, player: YouTubePlayer?, wasRestored: Boolean) {
-                player?.let { player.loadVideo(video) }
-            }
-
-            override fun onInitializationFailure(provider: YouTubePlayer.Provider?, error: YouTubeInitializationResult?) {
-                Log.e("ERROR", error.toString())
-                error?.getErrorDialog(this@PlayerActivity, 201)?.show()
-            }
-        })
+        playerProvider.initialize(clientID, this)
 
         binding.root.viewTreeObserver.addOnGlobalLayoutListener(this)
 
-        viewModel.minimize.observe(this, Observer { setWindowParams(600, 600) })
+        viewModel.minimize.observe(this, Observer {
+            setWindowParams(600, 600)
+            minimizeBtnLocationAnimator.reverse()
+            minimizeScaleXAnimator.reverse()
+            minimizeScaleYAnimator.reverse()
+        })
         viewModel.menu.observe(this, Observer {
             minimizeBtnLocationAnimator.start()
             minimizeScaleXAnimator.start()
@@ -92,32 +86,38 @@ class PlayerActivity : DaggerAppCompatActivity(), ViewTreeObserver.OnGlobalLayou
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+        video = intent.getStringExtra("video")
+        if (player != null && player?.isPlaying!!) {
+            finish()
+            PlayerActivity.start(this, intent.getStringExtra("video"))
+        }
+    }
+
+    override fun onInitializationSuccess(provider: YouTubePlayer.Provider?, player: YouTubePlayer?, wasRestored: Boolean) {
+        player?.let {
+            this@PlayerActivity.player = player
+            video?.let {
+                player.loadVideo(video)
+            }
+        }
+    }
+
+    override fun onInitializationFailure(provider: YouTubePlayer.Provider?, error: YouTubeInitializationResult?) {
+        Log.e("ERROR", error.toString())
+        error?.getErrorDialog(this@PlayerActivity, 201)?.show()
+    }
+
     override fun onGlobalLayout() {
-        minimizeBtnLocationAnimator = newLocationAnimator(binding.minimizeBtn)
-        minimizeScaleXAnimator = scaleAnimatorX(binding.minimizeBtn)
-        minimizeScaleYAnimator = scaleAnimatorY(binding.minimizeBtn)
+        createAnimators()
         binding.minimizeBtn.viewTreeObserver.removeOnGlobalLayoutListener(this)
     }
 
-    private fun newLocationAnimator(target: View): ObjectAnimator {
-        val animator = ObjectAnimator.ofFloat(target, "y", target.y, target.y - (target.height * 2f))
-        animator.duration = 300
-        animator.interpolator = AccelerateDecelerateInterpolator()
-        return animator
-    }
-
-    private fun scaleAnimatorX(target: View): ObjectAnimator {
-        val animator = ObjectAnimator.ofFloat(target, "scaleX", target.scaleX, target.scaleX * 1.5f)
-        animator.duration = 300
-        animator.interpolator = AccelerateDecelerateInterpolator()
-        return animator
-    }
-
-    private fun scaleAnimatorY(target: View): ObjectAnimator {
-        val animator = ObjectAnimator.ofFloat(target, "scaleY", target.scaleY, target.scaleY * 1.5f)
-        animator.duration = 300
-        animator.interpolator = AccelerateDecelerateInterpolator()
-        return animator
+    private fun createAnimators() {
+        minimizeBtnLocationAnimator = newLocationAnimator(binding.minimizeBtn, 2f)
+        minimizeScaleXAnimator = scaleAnimatorX(binding.minimizeBtn, 1.5f)
+        minimizeScaleYAnimator = scaleAnimatorY(binding.minimizeBtn, 1.5f)
     }
 
     private fun setWindowParams(width: Int, height: Int) {

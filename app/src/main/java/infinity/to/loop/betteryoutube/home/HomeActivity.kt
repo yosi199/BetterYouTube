@@ -10,6 +10,8 @@ import android.support.v7.app.ActionBar
 import android.view.Gravity
 import android.view.MenuItem
 import android.widget.Toast
+import com.google.common.eventbus.EventBus
+import com.google.common.eventbus.Subscribe
 import dagger.Provides
 import dagger.Subcomponent
 import dagger.android.AndroidInjector

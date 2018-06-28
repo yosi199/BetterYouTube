@@ -76,6 +76,5 @@ class LibraryModule {
     }
 
     @Provides
-    @Singleton
     fun youtubePlayerFragment() = CustomYouTubePlayer()
 }
