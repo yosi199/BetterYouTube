@@ -9,6 +9,7 @@ import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
+import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewTreeObserver
 import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
@@ -74,10 +75,10 @@ class PlayerActivity : DaggerAppCompatActivity(), ViewTreeObserver.OnGlobalLayou
         binding.root.viewTreeObserver.addOnGlobalLayoutListener(this)
 
         viewModel.minimize.observe(this, Observer {
-            setWindowParams(600, 600)
-            minimizeBtnLocationAnimator.reverse()
-            minimizeScaleXAnimator.reverse()
-            minimizeScaleYAnimator.reverse()
+            val windowSize = resources.getDimension(R.dimen.youtube_player_size_1).toInt()
+            setWindowParams(windowSize, windowSize)
+            binding.minimizeBtn.visibility = View.GONE
+            binding.floatingBtn.visibility = View.GONE
         })
         viewModel.menu.observe(this, Observer {
             minimizeBtnLocationAnimator.start()

@@ -37,7 +37,9 @@ class MainActivity : DaggerAppCompatActivity() {
                 if (it) {
                     //TODO - create custom progress bar view
                     binding.loader.visibility = View.VISIBLE
-                    viewModel.startHomeScreen()
+                    binding.root.postDelayed({
+                        viewModel.startHomeScreen()
+                    }, 1000)
                 } else viewModel.animateSignInBtn(binding.signInBtn)
             }
         })

@@ -7,11 +7,10 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBar
+import android.support.v7.widget.SearchView.OnQueryTextListener
 import android.view.Gravity
 import android.view.MenuItem
 import android.widget.Toast
-import com.google.common.eventbus.EventBus
-import com.google.common.eventbus.Subscribe
 import dagger.Provides
 import dagger.Subcomponent
 import dagger.android.AndroidInjector
@@ -20,7 +19,6 @@ import infinity.to.loop.betteryoutube.R
 import infinity.to.loop.betteryoutube.common.AuthConfigurationModule
 import infinity.to.loop.betteryoutube.databinding.ActivityHomeBinding
 import infinity.to.loop.betteryoutube.home.playlists.PlaylistFragment
-import infinity.to.loop.betteryoutube.player.CustomYouTubePlayer
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationServiceConfiguration
@@ -31,7 +29,6 @@ class HomeActivity : DaggerAppCompatActivity() {
 
     @Inject lateinit var viewModel: HomeViewModel
     @Inject lateinit var playlistFragment: PlaylistFragment
-    @Inject lateinit var customYouTubePlayer: CustomYouTubePlayer
 
     private lateinit var binding: ActivityHomeBinding
 
@@ -65,6 +62,10 @@ class HomeActivity : DaggerAppCompatActivity() {
             it?.let { if (it) binding.drawer.openDrawer(Gravity.START) }
         })
 
+    }
+
+    fun interceptsSearchQuery(listener: OnQueryTextListener) {
+        binding.searchBar.setOnQueryTextListener(listener)
     }
 
     override fun onResume() {

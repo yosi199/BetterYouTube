@@ -1,10 +1,12 @@
 package infinity.to.loop.betteryoutube.home.playlists
 
 import android.arch.lifecycle.Observer
+import android.content.Context
 import android.content.SharedPreferences
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.SearchView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,14 +28,20 @@ import javax.inject.Named
 import javax.inject.Provider
 
 
-class PlaylistFragment : DaggerFragment() {
+class PlaylistFragment : DaggerFragment(), SearchView.OnQueryTextListener {
 
     @Inject lateinit var viewModel: PlaylistViewModel
     @Inject lateinit var playlistItemFragment: Provider<PlaylistItemFragment>
     private lateinit var binding: FragPlaylistBinding
+    private lateinit var adapter: PlaylistAdapter
 
     companion object {
         fun newInstance() = PlaylistFragment()
+    }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        (context as HomeActivity).interceptsSearchQuery(this)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -46,8 +54,9 @@ class PlaylistFragment : DaggerFragment() {
         binding.viewModel = viewModel
         viewModel.playlistUpdate.observe(activity as HomeActivity, Observer {
             it?.let {
+                adapter = PlaylistAdapter(it, viewModel)
                 binding.playlistList.layoutManager = LinearLayoutManager(activity)
-                binding.playlistList.adapter = PlaylistAdapter(it, viewModel)
+                binding.playlistList.adapter = adapter
             }
         })
 
@@ -62,6 +71,15 @@ class PlaylistFragment : DaggerFragment() {
                     .commit()
 
         })
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        return true
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        newText?.let { adapter.filter.filter(newText) }
+        return true
     }
 
     @dagger.Module()

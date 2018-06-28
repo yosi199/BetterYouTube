@@ -37,7 +37,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
                     android:background="@color/background_light"
-                    app:titleTextColor="@android:color/white" />
+                    app:titleTextColor="@android:color/white">
+
+                    <android.support.v7.widget.SearchView
+                        android:id="@+id/search_bar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        app:defaultQueryHint="Search"
+                        app:searchHintIcon="@drawable/common_full_open_on_phone" />
+
+
+                </android.support.v7.widget.Toolbar>
             </android.support.design.widget.AppBarLayout>
 
             <FrameLayout
