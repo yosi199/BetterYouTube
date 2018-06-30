@@ -23,12 +23,6 @@ class AppModule {
 
     @Provides
     @Singleton
-    @Named("googleClientId")
-    fun cliendId() = "AIzaSyDV1zMWQL2JYiUM_ey6cl9ijmecKz1a2hk"
-
-
-    @Provides
-    @Singleton
     fun sharedPreferences(context: Context): SharedPreferences = context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
 
     @Provides

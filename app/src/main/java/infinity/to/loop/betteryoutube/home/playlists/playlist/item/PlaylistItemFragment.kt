@@ -20,6 +20,7 @@ import infinity.to.loop.betteryoutube.application.App
 import infinity.to.loop.betteryoutube.common.AuthConfigurationModule
 import infinity.to.loop.betteryoutube.databinding.FragPlaylistItemBinding
 import infinity.to.loop.betteryoutube.home.HomeActivity
+import infinity.to.loop.betteryoutube.persistance.FirebaseDb
 import infinity.to.loop.betteryoutube.player.PlayerActivity
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationService
@@ -31,6 +32,7 @@ class PlaylistItemFragment : DaggerFragment(), SearchView.OnQueryTextListener {
 
     @Inject @Named("clientID") lateinit var clientID: String
     @Inject lateinit var viewModel: PlaylistItemViewModel
+    @Inject lateinit var firebase: FirebaseDb
     private lateinit var binding: FragPlaylistItemBinding
     private lateinit var adapter: SpecificPlaylistAdapter
 
@@ -65,6 +67,7 @@ class PlaylistItemFragment : DaggerFragment(), SearchView.OnQueryTextListener {
 
         viewModel.trackSelection.observe(activity as HomeActivity, Observer {
             it?.let { video ->
+                firebase.updateFriends(video)
                 PlayerActivity.start(activity, video)
             }
         })

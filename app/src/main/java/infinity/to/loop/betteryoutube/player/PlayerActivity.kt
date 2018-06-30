@@ -8,6 +8,7 @@ import android.content.Intent.*
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
@@ -16,6 +17,7 @@ import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
 import android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
 import com.google.android.youtube.player.YouTubeInitializationResult
 import com.google.android.youtube.player.YouTubePlayer
+import com.google.common.eventbus.EventBus
 import dagger.Provides
 import dagger.Subcomponent
 import dagger.android.AndroidInjector
@@ -34,6 +36,7 @@ class PlayerActivity : DaggerAppCompatActivity(), ViewTreeObserver.OnGlobalLayou
     @Inject @Named("clientID") lateinit var clientID: String
     @Inject lateinit var viewModel: PlayerViewModel
     @Inject lateinit var playerProvider: CustomYouTubePlayer
+    @Inject lateinit var eventBus: EventBus
 
     private lateinit var binding: ActivityPlayerBinding
 
@@ -94,6 +97,11 @@ class PlayerActivity : DaggerAppCompatActivity(), ViewTreeObserver.OnGlobalLayou
             finish()
             PlayerActivity.start(this, intent.getStringExtra("video"))
         }
+    }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+        eventBus.post(Pair(keyCode, event))
+        return false
     }
 
     override fun onInitializationSuccess(provider: YouTubePlayer.Provider?, player: YouTubePlayer?, wasRestored: Boolean) {

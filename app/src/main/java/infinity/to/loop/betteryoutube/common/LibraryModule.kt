@@ -9,10 +9,12 @@ import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.jackson.JacksonFactory
 import com.google.api.services.youtube.YouTube
 import com.google.common.eventbus.EventBus
+import com.google.firebase.database.FirebaseDatabase
 import dagger.Module
 import dagger.Provides
 import infinity.to.loop.betteryoutube.R
 import infinity.to.loop.betteryoutube.network.interceptor.AuthorizationInterceptor
+import infinity.to.loop.betteryoutube.persistance.FirebaseDb
 import infinity.to.loop.betteryoutube.player.CustomYouTubePlayer
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -77,4 +79,12 @@ class LibraryModule {
 
     @Provides
     fun youtubePlayerFragment() = CustomYouTubePlayer()
+
+    @Provides
+    @Singleton
+    fun firebaseDatabase() = FirebaseDatabase.getInstance()
+
+    @Provides
+    @Singleton
+    fun firebaseManager(firebaseDatabase: FirebaseDatabase) = FirebaseDb(firebaseDatabase)
 }
