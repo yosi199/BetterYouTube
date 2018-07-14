@@ -23,7 +23,7 @@ class PlaylistItemViewModel @Inject constructor(private val context: Context,
                                                 private val service: AuthorizationService) : PlaylistActionListener {
 
     val playlistUpdate = MutableLiveData<PlaylistItemListResponse>()
-    val trackSelection = MutableLiveData<String>()
+    val trackSelection = MutableLiveData<Pair<String, Int>>()
 
     companion object {
         val TAG = PlaylistItemViewModel::class.java.name
@@ -49,7 +49,7 @@ class PlaylistItemViewModel @Inject constructor(private val context: Context,
         }
     }
 
-    override fun clickedItem(id: String) {
-        trackSelection.postValue(id)
+    override fun clickedItem(id: String, index: Int) {
+        trackSelection.postValue(Pair(id, index))
     }
 }

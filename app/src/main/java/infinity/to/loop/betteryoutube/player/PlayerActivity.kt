@@ -46,21 +46,25 @@ class PlayerActivity : DaggerAppCompatActivity(), ViewTreeObserver.OnGlobalLayou
     private var mDx: Int = 0
     private var mDy: Int = 0
 
-    companion object {
-        fun start(context: Context, video: String) {
-            val intent = Intent(context, PlayerActivity::class.java)
-            intent.flags = FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS or FLAG_ACTIVITY_CLEAR_TOP or FLAG_ACTIVITY_NO_HISTORY
-            intent.putExtra("video", video)
-            context.startActivity(intent)
-        }
-    }
-
     private lateinit var minimizeBtnLocationAnimator: ObjectAnimator
     private lateinit var minimizeScaleXAnimator: ObjectAnimator
     private lateinit var minimizeScaleYAnimator: ObjectAnimator
 
-    private var video: String? = null
+    private lateinit var video: String
+    private lateinit var playlist: String
+    private var index: Int = 0
     private var player: YouTubePlayer? = null
+
+    companion object {
+        fun start(context: Context, video: String, playlist: String, index: Int) {
+            val intent = Intent(context, PlayerActivity::class.java)
+            intent.flags = FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS or FLAG_ACTIVITY_CLEAR_TOP or FLAG_ACTIVITY_NO_HISTORY
+            intent.putExtra(context.getString(R.string.video), video)
+            intent.putExtra(context.getString(R.string.playlist), playlist)
+            intent.putExtra(context.getString(R.string.index), index)
+            context.startActivity(intent)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,10 +96,13 @@ class PlayerActivity : DaggerAppCompatActivity(), ViewTreeObserver.OnGlobalLayou
 
     override fun onResume() {
         super.onResume()
-        video = intent.getStringExtra("video")
+        video = intent.getStringExtra(getString(R.string.video))
+        playlist = intent.getStringExtra(getString(R.string.playlist))
+        index = intent.getIntExtra(getString(R.string.index), 0)
+
         if (player != null && player?.isPlaying!!) {
             finish()
-            PlayerActivity.start(this, intent.getStringExtra("video"))
+            PlayerActivity.start(this, video, playlist, index)
         }
     }
 
@@ -107,9 +114,7 @@ class PlayerActivity : DaggerAppCompatActivity(), ViewTreeObserver.OnGlobalLayou
     override fun onInitializationSuccess(provider: YouTubePlayer.Provider?, player: YouTubePlayer?, wasRestored: Boolean) {
         player?.let {
             this@PlayerActivity.player = player
-            video?.let {
-                player.loadVideo(video)
-            }
+            player.loadPlaylist(playlist, index, 0)
         }
     }
 

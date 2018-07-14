@@ -1,13 +1,14 @@
 package infinity.to.loop.betteryoutube.home.feed
 
+import android.arch.lifecycle.Observer
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 import dagger.Provides
 import dagger.Subcomponent
 import dagger.android.AndroidInjector
@@ -15,12 +16,16 @@ import dagger.android.DaggerFragment
 import infinity.to.loop.betteryoutube.R
 import infinity.to.loop.betteryoutube.common.AuthConfigurationModule
 import infinity.to.loop.betteryoutube.databinding.FragFeedBinding
+import infinity.to.loop.betteryoutube.home.HomeActivity
+import infinity.to.loop.betteryoutube.persistance.FirebaseDb
+import infinity.to.loop.betteryoutube.persistance.YouTubeDataManager
 import javax.inject.Inject
-
 
 class FeedFragment : DaggerFragment() {
 
     @Inject lateinit var viewModel: FeedViewModel
+    @Inject lateinit var firebaseDb: FirebaseDb
+
     private lateinit var binding: FragFeedBinding
     private val auth = FirebaseAuth.getInstance()
 
@@ -36,6 +41,8 @@ class FeedFragment : DaggerFragment() {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         binding.viewModel = viewModel
 
+        firebaseDb.registerFriendListener(viewModel)
+
         val currentUser = auth.currentUser
         if (currentUser == null) {
             auth.signInAnonymously().addOnCompleteListener { task ->
@@ -44,6 +51,16 @@ class FeedFragment : DaggerFragment() {
                 }
             }
         }
+
+        viewModel.loadFeed.observe(activity as HomeActivity, Observer {
+            binding.feedList.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
+            binding.feedList.adapter = FeedAdapter(it!!)
+        })
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        firebaseDb.unregisterFriendListener(viewModel)
     }
 
     @dagger.Module()
@@ -54,8 +71,8 @@ class FeedFragment : DaggerFragment() {
 
             @JvmStatic
             @Provides
-            fun viewModel(): FeedViewModel {
-                return FeedViewModel()
+            fun viewModel(firebaseDb: FirebaseDb, youTubeDataManager: YouTubeDataManager): FeedViewModel {
+                return FeedViewModel(youTubeDataManager)
             }
         }
 

@@ -40,7 +40,7 @@ class SpecificPlaylistAdapter(private val listener: PlaylistActionListener) : Re
 
         Glide.with(holder.thumbnails).load(item.snippet.thumbnails.default.url).into(holder.thumbnails)
 
-        holder.itemView.setOnClickListener { listener.clickedItem(item.contentDetails.videoId) }
+        holder.itemView.setOnClickListener { listener.clickedItem(item.contentDetails.videoId, position) }
     }
 
     override fun getFilter(): Filter {

@@ -43,7 +43,7 @@ class PlaylistAdapter(response: PlaylistListResponse,
             holder.trackCount.text = "${it.itemCount} Tracks"
         }
 
-        item.id?.let { id -> holder.itemView.setOnClickListener { listener.clickedItem(id) } }
+        item.id?.let { id -> holder.itemView.setOnClickListener { listener.clickedItem(id, position) } }
     }
 
     override fun getFilter(): Filter {

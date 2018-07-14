@@ -15,6 +15,7 @@ import dagger.Provides
 import infinity.to.loop.betteryoutube.R
 import infinity.to.loop.betteryoutube.network.interceptor.AuthorizationInterceptor
 import infinity.to.loop.betteryoutube.persistance.FirebaseDb
+import infinity.to.loop.betteryoutube.persistance.YouTubeDataManager
 import infinity.to.loop.betteryoutube.player.CustomYouTubePlayer
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -87,4 +88,8 @@ class LibraryModule {
     @Provides
     @Singleton
     fun firebaseManager(firebaseDatabase: FirebaseDatabase) = FirebaseDb(firebaseDatabase)
+
+    @Provides
+    @Singleton
+    fun youtubeDataManager() = YouTubeDataManager()
 }

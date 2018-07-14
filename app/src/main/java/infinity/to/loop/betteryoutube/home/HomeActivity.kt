@@ -17,7 +17,6 @@ import android.view.*
 import android.view.KeyEvent.KEYCODE_DEL
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.Toast
 import com.google.api.services.youtube.YouTube
 import com.google.common.eventbus.EventBus
@@ -31,9 +30,10 @@ import infinity.to.loop.betteryoutube.common.AuthConfigurationModule
 import infinity.to.loop.betteryoutube.databinding.ActivityHomeBinding
 import infinity.to.loop.betteryoutube.home.feed.FeedFragment
 import infinity.to.loop.betteryoutube.home.playlists.PlaylistFragment
+import infinity.to.loop.betteryoutube.persistance.FirebaseDb
+import infinity.to.loop.betteryoutube.persistance.YouTubeDataManager
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationService
-import net.openid.appauth.AuthorizationServiceConfiguration
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Provider
@@ -49,21 +49,25 @@ class HomeActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
 
     private lateinit var binding: ActivityHomeBinding
     private var keyBuffer = StringBuilder()
-    private lateinit var imm: InputMethodManager
-
+    private lateinit var inputMethodManager: InputMethodManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_home)
         binding.viewModel = viewModel
-        imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
-        val myPlaylistsMenuItem = binding.navView.menu.findItem(R.id.menu_my_playlists)
-        onNavigationItemSelected(myPlaylistsMenuItem)
+        // Setup menu
+        val playlistsMenuItem = binding.navView.menu.findItem(R.id.menu_my_playlists)
+        onNavigationItemSelected(playlistsMenuItem)
 
+        // Setup toolbar
         setToolbar()
         eventBus.register(this)
+
+        // Load data
         viewModel.loadChannels()
+        viewModel.loadSubscriptions()
 
         binding.searchBar.viewTreeObserver.addOnGlobalFocusChangeListener(this)
         binding.searchBar.setOnQueryTextFocusChangeListener(this)
@@ -89,8 +93,7 @@ class HomeActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
             keyBuffer.append(event.second.unicodeChar.toChar())
         }
         binding.searchBar.setQuery(keyBuffer.toString(), false)
-        Log.d(HomeActivity::
-        class.java.name, event.toString())
+        Log.d(HomeActivity::class.java.name, event.toString())
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -145,11 +148,11 @@ class HomeActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
 
     fun showKeybaord(v: View) {
         v.requestFocus()
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_NOT_ALWAYS)
+        inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_NOT_ALWAYS)
     }
 
     fun hideKeyboard(v: View) {
-        imm.hideSoftInputFromInputMethod(v.windowToken, 0)
+        inputMethodManager.hideSoftInputFromInputMethod(v.windowToken, 0)
     }
 
     override fun onResume() {
@@ -181,8 +184,16 @@ class HomeActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
                           handler: Handler,
                           state: Provider<AuthState>,
                           service: AuthorizationService,
-                          configuration: AuthorizationServiceConfiguration): HomeViewModel {
-                return HomeViewModel(sharedPrefs, youTube, clientID, handler, state, service, configuration)
+                          firebaseDb: FirebaseDb,
+                          youTubeDataManager: YouTubeDataManager): HomeViewModel {
+                return HomeViewModel(sharedPrefs,
+                        youTube,
+                        clientID,
+                        handler,
+                        state,
+                        service,
+                        firebaseDb,
+                        youTubeDataManager)
             }
         }
 

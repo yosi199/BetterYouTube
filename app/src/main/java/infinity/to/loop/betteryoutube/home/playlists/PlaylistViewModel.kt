@@ -52,7 +52,7 @@ class PlaylistViewModel @Inject constructor(private val context: Context,
         }
     }
 
-    override fun clickedItem(id: String) {
+    override fun clickedItem(id: String, index: Int) {
         chosenPlaylistId.postValue(id)
     }
 }

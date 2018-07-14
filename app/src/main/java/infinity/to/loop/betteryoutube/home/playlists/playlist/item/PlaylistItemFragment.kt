@@ -20,6 +20,7 @@ import infinity.to.loop.betteryoutube.application.App
 import infinity.to.loop.betteryoutube.common.AuthConfigurationModule
 import infinity.to.loop.betteryoutube.databinding.FragPlaylistItemBinding
 import infinity.to.loop.betteryoutube.home.HomeActivity
+import infinity.to.loop.betteryoutube.persistance.CurrentlyPlaying
 import infinity.to.loop.betteryoutube.persistance.FirebaseDb
 import infinity.to.loop.betteryoutube.player.PlayerActivity
 import net.openid.appauth.AuthState
@@ -35,10 +36,12 @@ class PlaylistItemFragment : DaggerFragment(), SearchView.OnQueryTextListener {
     @Inject lateinit var firebase: FirebaseDb
     private lateinit var binding: FragPlaylistItemBinding
     private lateinit var adapter: SpecificPlaylistAdapter
+    private lateinit var playlistId: String
 
     companion object {
         const val ARG_KEY_ID: String = "PlaylistID"
         fun newInstance() = PlaylistItemFragment()
+
     }
 
     override fun onAttach(context: Context?) {
@@ -47,7 +50,7 @@ class PlaylistItemFragment : DaggerFragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val playlistId = arguments.getString(ARG_KEY_ID)
+        playlistId = arguments.getString(ARG_KEY_ID)
         viewModel.load(playlistId)
         binding = DataBindingUtil.inflate(inflater, R.layout.frag_playlist_item, container, false)
         return binding.root
@@ -67,8 +70,8 @@ class PlaylistItemFragment : DaggerFragment(), SearchView.OnQueryTextListener {
 
         viewModel.trackSelection.observe(activity as HomeActivity, Observer {
             it?.let { video ->
-                firebase.updateFriends(video)
-                PlayerActivity.start(activity, video)
+                firebase.updateCurrentlyPlaying(CurrentlyPlaying(video.first, video.second.toString()))
+                PlayerActivity.start(activity, video.first, playlistId, video.second)
             }
         })
     }
