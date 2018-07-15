@@ -19,12 +19,12 @@ class FirebaseDb @Inject constructor(private val database: FirebaseDatabase) {
         friends.child(currentUserId).setValue(data)
     }
 
-    fun registerFriendListener(eventListener: ValueEventListener) {
+    fun registerEventListener(eventListener: ValueEventListener) {
         val friends = database.getReference(friendsDB)
         friends.addValueEventListener(eventListener)
     }
 
-    fun unregisterFriendListener(eventListener: ValueEventListener) {
+    fun unregisterEventLisetner(eventListener: ValueEventListener) {
         val friends = database.getReference(friendsDB)
         friends.removeEventListener(eventListener)
     }

@@ -1,5 +1,5 @@
 package infinity.to.loop.betteryoutube.home.playlists
 
-interface PlaylistActionListener {
-    fun clickedItem(id: String, index: Int)
+interface PlaylistActionListener<T> {
+    fun clickedItem(item: T, index: Int)
 }

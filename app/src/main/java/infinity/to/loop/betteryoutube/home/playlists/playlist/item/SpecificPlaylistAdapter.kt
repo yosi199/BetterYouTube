@@ -14,7 +14,7 @@ import com.google.api.services.youtube.model.PlaylistItemListResponse
 import infinity.to.loop.betteryoutube.R
 import infinity.to.loop.betteryoutube.home.playlists.PlaylistActionListener
 
-class SpecificPlaylistAdapter(private val listener: PlaylistActionListener) : RecyclerView.Adapter<SpecificPlaylistAdapter.ViewHolder>(), Filterable {
+class SpecificPlaylistAdapter(private val listener: PlaylistActionListener<PlaylistItem>) : RecyclerView.Adapter<SpecificPlaylistAdapter.ViewHolder>(), Filterable {
 
     private var items: MutableList<PlaylistItem> = mutableListOf()
     private var filteredItems: MutableList<PlaylistItem> = mutableListOf()
@@ -40,7 +40,7 @@ class SpecificPlaylistAdapter(private val listener: PlaylistActionListener) : Re
 
         Glide.with(holder.thumbnails).load(item.snippet.thumbnails.default.url).into(holder.thumbnails)
 
-        holder.itemView.setOnClickListener { listener.clickedItem(item.contentDetails.videoId, position) }
+        holder.itemView.setOnClickListener { listener.clickedItem(item, position) }
     }
 
     override fun getFilter(): Filter {

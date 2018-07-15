@@ -19,6 +19,7 @@ import infinity.to.loop.betteryoutube.databinding.FragFeedBinding
 import infinity.to.loop.betteryoutube.home.HomeActivity
 import infinity.to.loop.betteryoutube.persistance.FirebaseDb
 import infinity.to.loop.betteryoutube.persistance.YouTubeDataManager
+import infinity.to.loop.betteryoutube.player.PlayerActivity
 import javax.inject.Inject
 
 class FeedFragment : DaggerFragment() {
@@ -41,7 +42,7 @@ class FeedFragment : DaggerFragment() {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         binding.viewModel = viewModel
 
-        firebaseDb.registerFriendListener(viewModel)
+        firebaseDb.registerEventListener(viewModel)
 
         val currentUser = auth.currentUser
         if (currentUser == null) {
@@ -54,13 +55,17 @@ class FeedFragment : DaggerFragment() {
 
         viewModel.loadFeed.observe(activity as HomeActivity, Observer {
             binding.feedList.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
-            binding.feedList.adapter = FeedAdapter(it!!)
+            binding.feedList.adapter = FeedAdapter(viewModel, it!!)
+        })
+
+        viewModel.feedItemClicked.observe(activity as HomeActivity, Observer {
+            PlayerActivity.start(activity, it?.first!!, index = it.second)
         })
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        firebaseDb.unregisterFriendListener(viewModel)
+        firebaseDb.unregisterEventLisetner(viewModel)
     }
 
     @dagger.Module()

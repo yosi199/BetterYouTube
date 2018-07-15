@@ -69,9 +69,16 @@ class PlaylistItemFragment : DaggerFragment(), SearchView.OnQueryTextListener {
         })
 
         viewModel.trackSelection.observe(activity as HomeActivity, Observer {
-            it?.let { video ->
-                firebase.updateCurrentlyPlaying(CurrentlyPlaying(video.first, video.second.toString()))
-                PlayerActivity.start(activity, video.first, playlistId, video.second)
+            it?.let { playlistItemPair ->
+                val currentlyPlaying = with(playlistItemPair) {
+                    CurrentlyPlaying(this.first.contentDetails.videoId,
+                            this.second.toString(),
+                            this.first.snippet.thumbnails.default.url,
+                            this.first.snippet.title,
+                            this.first.snippet.description)
+                }
+                firebase.updateCurrentlyPlaying(currentlyPlaying)
+                PlayerActivity.start(activity, playlistItemPair.first.contentDetails.videoId, playlistId, playlistItemPair.second)
             }
         })
     }

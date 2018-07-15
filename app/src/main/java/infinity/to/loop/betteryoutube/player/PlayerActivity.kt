@@ -51,17 +51,17 @@ class PlayerActivity : DaggerAppCompatActivity(), ViewTreeObserver.OnGlobalLayou
     private lateinit var minimizeScaleYAnimator: ObjectAnimator
 
     private lateinit var video: String
-    private lateinit var playlist: String
     private var index: Int = 0
+    private var playlist: String? = null
     private var player: YouTubePlayer? = null
 
     companion object {
-        fun start(context: Context, video: String, playlist: String, index: Int) {
+        fun start(context: Context, video: String, playlist: String? = null, index: Int) {
             val intent = Intent(context, PlayerActivity::class.java)
             intent.flags = FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS or FLAG_ACTIVITY_CLEAR_TOP or FLAG_ACTIVITY_NO_HISTORY
             intent.putExtra(context.getString(R.string.video), video)
-            intent.putExtra(context.getString(R.string.playlist), playlist)
             intent.putExtra(context.getString(R.string.index), index)
+            playlist?.let { intent.putExtra(context.getString(R.string.playlist), playlist) }
             context.startActivity(intent)
         }
     }
@@ -97,8 +97,10 @@ class PlayerActivity : DaggerAppCompatActivity(), ViewTreeObserver.OnGlobalLayou
     override fun onResume() {
         super.onResume()
         video = intent.getStringExtra(getString(R.string.video))
-        playlist = intent.getStringExtra(getString(R.string.playlist))
         index = intent.getIntExtra(getString(R.string.index), 0)
+        if (intent.hasExtra(getString(R.string.playlist))) {
+            playlist = intent.getStringExtra(getString(R.string.playlist))
+        }
 
         if (player != null && player?.isPlaying!!) {
             finish()
@@ -114,7 +116,11 @@ class PlayerActivity : DaggerAppCompatActivity(), ViewTreeObserver.OnGlobalLayou
     override fun onInitializationSuccess(provider: YouTubePlayer.Provider?, player: YouTubePlayer?, wasRestored: Boolean) {
         player?.let {
             this@PlayerActivity.player = player
-            player.loadPlaylist(playlist, index, 0)
+            playlist?.let {
+                player.loadPlaylist(playlist, index, 0)
+                return
+            }
+            player.loadVideo(video)
         }
     }
 

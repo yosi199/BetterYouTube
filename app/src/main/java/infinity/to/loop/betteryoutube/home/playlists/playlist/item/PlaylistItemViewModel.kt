@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import com.google.api.services.youtube.YouTube
+import com.google.api.services.youtube.model.PlaylistItem
 import com.google.api.services.youtube.model.PlaylistItemListResponse
 import infinity.to.loop.betteryoutube.home.playlists.PlaylistActionListener
 import io.reactivex.Single
@@ -20,10 +21,10 @@ class PlaylistItemViewModel @Inject constructor(private val context: Context,
                                                 private val clientId: String,
                                                 private val sharedPreferences: SharedPreferences,
                                                 private val state: Provider<AuthState?>,
-                                                private val service: AuthorizationService) : PlaylistActionListener {
+                                                private val service: AuthorizationService) : PlaylistActionListener<PlaylistItem> {
 
     val playlistUpdate = MutableLiveData<PlaylistItemListResponse>()
-    val trackSelection = MutableLiveData<Pair<String, Int>>()
+    val trackSelection = MutableLiveData<Pair<PlaylistItem, Int>>()
 
     companion object {
         val TAG = PlaylistItemViewModel::class.java.name
@@ -49,7 +50,7 @@ class PlaylistItemViewModel @Inject constructor(private val context: Context,
         }
     }
 
-    override fun clickedItem(id: String, index: Int) {
-        trackSelection.postValue(Pair(id, index))
+    override fun clickedItem(item: PlaylistItem, index: Int) {
+        trackSelection.postValue(Pair(item, index))
     }
 }

@@ -19,7 +19,7 @@ class PlaylistViewModel @Inject constructor(private val context: Context,
                                             private val clientId: String,
                                             private val sharedPreferences: SharedPreferences,
                                             private val authState: Provider<AuthState?>,
-                                            private val authService: AuthorizationService) : PlaylistActionListener {
+                                            private val authService: AuthorizationService) : PlaylistActionListener<String> {
 
 
     val playlistUpdate = MutableLiveData<PlaylistListResponse>()
@@ -52,7 +52,7 @@ class PlaylistViewModel @Inject constructor(private val context: Context,
         }
     }
 
-    override fun clickedItem(id: String, index: Int) {
-        chosenPlaylistId.postValue(id)
+    override fun clickedItem(item: String, index: Int) {
+        chosenPlaylistId.postValue(item)
     }
 }
