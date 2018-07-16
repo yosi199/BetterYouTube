@@ -108,10 +108,10 @@ class PlayerActivity : DaggerAppCompatActivity(), ViewTreeObserver.OnGlobalLayou
         }
     }
 
-    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-        eventBus.post(Pair(keyCode, event))
-        return false
-    }
+//    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+//        eventBus.post(Pair(keyCode, event))
+//        return false
+//    }
 
     override fun onInitializationSuccess(provider: YouTubePlayer.Provider?, player: YouTubePlayer?, wasRestored: Boolean) {
         player?.let {

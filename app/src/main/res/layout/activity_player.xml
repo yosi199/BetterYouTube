@@ -27,7 +27,8 @@
             android:layout_margin="20dp"
             android:backgroundTint="@color/colorPrimary"
             android:onClick="@{viewModel::minimize}"
-            android:src="@drawable/minimize" />
+            android:src="@drawable/minimize"
+            android:visibility="gone" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/floatingBtn"
@@ -37,7 +38,8 @@
             android:layout_centerHorizontal="true"
             android:layout_margin="20dp"
             android:onClick="@{viewModel::menu}"
-            android:src="@drawable/menu" />
+            android:src="@drawable/menu"
+            android:visibility="gone" />
 
 
         <FrameLayout

@@ -41,9 +41,11 @@
                 <data android:scheme="infinity.to.loop.betteryoutube" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".player.PlayerActivity"
-            android:theme="@style/Translucent" />
+        <!--<activity-->
+        <!--android:name=".player.PlayerActivity"-->
+        <!--android:theme="@style/Translucent" />-->
+
+        <activity android:name=".player.PlayerActivity" />
     </application>
 
 
