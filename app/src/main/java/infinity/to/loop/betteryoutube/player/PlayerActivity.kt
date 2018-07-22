@@ -8,7 +8,6 @@ import android.content.Intent.*
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.util.Log
-import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
@@ -25,18 +24,22 @@ import dagger.android.support.DaggerAppCompatActivity
 import infinity.to.loop.betteryoutube.R
 import infinity.to.loop.betteryoutube.common.AuthConfigurationModule
 import infinity.to.loop.betteryoutube.databinding.ActivityPlayerBinding
+import infinity.to.loop.betteryoutube.persistance.CurrentlyPlaying
+import infinity.to.loop.betteryoutube.persistance.FirebaseDb
 import infinity.to.loop.betteryoutube.utils.newLocationAnimator
 import infinity.to.loop.betteryoutube.utils.scaleAnimatorX
 import infinity.to.loop.betteryoutube.utils.scaleAnimatorY
 import javax.inject.Inject
 import javax.inject.Named
 
-class PlayerActivity : DaggerAppCompatActivity(), ViewTreeObserver.OnGlobalLayoutListener, YouTubePlayer.OnInitializedListener {
+class PlayerActivity : DaggerAppCompatActivity(), ViewTreeObserver.OnGlobalLayoutListener,
+        YouTubePlayer.OnInitializedListener {
 
     @Inject @Named("clientID") lateinit var clientID: String
     @Inject lateinit var viewModel: PlayerViewModel
     @Inject lateinit var playerProvider: CustomYouTubePlayer
     @Inject lateinit var eventBus: EventBus
+    @Inject lateinit var firebase: FirebaseDb
 
     private lateinit var binding: ActivityPlayerBinding
 
@@ -50,18 +53,14 @@ class PlayerActivity : DaggerAppCompatActivity(), ViewTreeObserver.OnGlobalLayou
     private lateinit var minimizeScaleXAnimator: ObjectAnimator
     private lateinit var minimizeScaleYAnimator: ObjectAnimator
 
-    private lateinit var video: String
-    private var index: Int = 0
-    private var playlist: String? = null
+    private lateinit var currentlyPlaying: CurrentlyPlaying
     private var player: YouTubePlayer? = null
 
     companion object {
-        fun start(context: Context, video: String, playlist: String? = null, index: Int) {
+        fun start(context: Context, currentlyPlaying: CurrentlyPlaying) {
             val intent = Intent(context, PlayerActivity::class.java)
             intent.flags = FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS or FLAG_ACTIVITY_CLEAR_TOP or FLAG_ACTIVITY_NO_HISTORY
-            intent.putExtra(context.getString(R.string.video), video)
-            intent.putExtra(context.getString(R.string.index), index)
-            playlist?.let { intent.putExtra(context.getString(R.string.playlist), playlist) }
+            intent.putExtra(CurrentlyPlaying.TAG, currentlyPlaying)
             context.startActivity(intent)
         }
     }
@@ -94,17 +93,15 @@ class PlayerActivity : DaggerAppCompatActivity(), ViewTreeObserver.OnGlobalLayou
         })
     }
 
+
     override fun onResume() {
         super.onResume()
-        video = intent.getStringExtra(getString(R.string.video))
-        index = intent.getIntExtra(getString(R.string.index), 0)
-        if (intent.hasExtra(getString(R.string.playlist))) {
-            playlist = intent.getStringExtra(getString(R.string.playlist))
-        }
+
+        currentlyPlaying = intent.getParcelableExtra(CurrentlyPlaying.TAG)
 
         if (player != null && player?.isPlaying!!) {
             finish()
-            PlayerActivity.start(this, video, playlist, index)
+            PlayerActivity.start(this, currentlyPlaying)
         }
     }
 
@@ -116,11 +113,12 @@ class PlayerActivity : DaggerAppCompatActivity(), ViewTreeObserver.OnGlobalLayou
     override fun onInitializationSuccess(provider: YouTubePlayer.Provider?, player: YouTubePlayer?, wasRestored: Boolean) {
         player?.let {
             this@PlayerActivity.player = player
-            playlist?.let {
-                player.loadPlaylist(playlist, index, 0)
+            firebase.updateCurrentlyPlaying(currentlyPlaying)
+            currentlyPlaying.playlistId?.let {
+                player.loadPlaylist(currentlyPlaying.playlistId, currentlyPlaying.value.toInt(), 0)
                 return
             }
-            player.loadVideo(video)
+            player.loadVideo(currentlyPlaying.videoId)
         }
     }
 

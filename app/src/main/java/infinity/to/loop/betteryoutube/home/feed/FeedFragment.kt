@@ -59,7 +59,9 @@ class FeedFragment : DaggerFragment() {
         })
 
         viewModel.feedItemClicked.observe(activity as HomeActivity, Observer {
-            PlayerActivity.start(activity, it?.first!!, index = it.second)
+            it?.first?.let {
+                PlayerActivity.start(activity, it)
+            }
         })
     }
 

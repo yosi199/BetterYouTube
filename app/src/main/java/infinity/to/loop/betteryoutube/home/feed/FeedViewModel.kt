@@ -11,10 +11,10 @@ import infinity.to.loop.betteryoutube.persistance.FriendsCurrentlyPlaying
 import infinity.to.loop.betteryoutube.persistance.YouTubeDataManager
 import javax.inject.Inject
 
-class FeedViewModel @Inject constructor(private val youTubeDataManager: YouTubeDataManager) : ValueEventListener, PlaylistActionListener<String> {
+class FeedViewModel @Inject constructor(private val youTubeDataManager: YouTubeDataManager) : ValueEventListener, PlaylistActionListener<CurrentlyPlaying> {
 
     val loadFeed = MutableLiveData<FriendsCurrentlyPlaying>()
-    val feedItemClicked = MutableLiveData<Pair<String, Int>>()
+    val feedItemClicked = MutableLiveData<Pair<CurrentlyPlaying, Int>>()
 
     override fun onCancelled(error: DatabaseError) {
     }
@@ -31,15 +31,18 @@ class FeedViewModel @Inject constructor(private val youTubeDataManager: YouTubeD
 
             val userSnippet = youTubeDataManager.getFriend(userIdKey!!)
 
-            val userCurrentlyPlaying = with(map as HashMap<String, String>) {
-                CurrentlyPlaying(this["currentlyPlaying"]!!,
-                        this["value"]!!,
-                        this["thumbnailsUrl"]!!,
-                        this["trackTitle"]!!,
-                        this["trackAuthor"]!!)
-            }
             if (userSnippet != null) {
                 snippetsList.add(userSnippet)
+
+                val userCurrentlyPlaying = with(map as HashMap<String, String>) {
+                    CurrentlyPlaying(this["videoId"]!!,
+                            this["playlistId"],
+                            this["value"]!!,
+                            this["thumbnailsUrl"]!!,
+                            this["trackTitle"]!!,
+                            this["trackAuthor"]!!)
+                }
+
                 currentlyPlayingList.add(userCurrentlyPlaying)
             }
         }
@@ -48,7 +51,7 @@ class FeedViewModel @Inject constructor(private val youTubeDataManager: YouTubeD
         }
     }
 
-    override fun clickedItem(item: String, index: Int) {
+    override fun clickedItem(item: CurrentlyPlaying, index: Int) {
         feedItemClicked.postValue(Pair(item, index))
     }
 }

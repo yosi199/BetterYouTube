@@ -21,7 +21,6 @@ import infinity.to.loop.betteryoutube.common.AuthConfigurationModule
 import infinity.to.loop.betteryoutube.databinding.FragPlaylistItemBinding
 import infinity.to.loop.betteryoutube.home.HomeActivity
 import infinity.to.loop.betteryoutube.persistance.CurrentlyPlaying
-import infinity.to.loop.betteryoutube.persistance.FirebaseDb
 import infinity.to.loop.betteryoutube.player.PlayerActivity
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationService
@@ -33,7 +32,6 @@ class PlaylistItemFragment : DaggerFragment(), SearchView.OnQueryTextListener {
 
     @Inject @Named("clientID") lateinit var clientID: String
     @Inject lateinit var viewModel: PlaylistItemViewModel
-    @Inject lateinit var firebase: FirebaseDb
     private lateinit var binding: FragPlaylistItemBinding
     private lateinit var adapter: SpecificPlaylistAdapter
     private lateinit var playlistId: String
@@ -41,7 +39,6 @@ class PlaylistItemFragment : DaggerFragment(), SearchView.OnQueryTextListener {
     companion object {
         const val ARG_KEY_ID: String = "PlaylistID"
         fun newInstance() = PlaylistItemFragment()
-
     }
 
     override fun onAttach(context: Context?) {
@@ -72,13 +69,13 @@ class PlaylistItemFragment : DaggerFragment(), SearchView.OnQueryTextListener {
             it?.let { playlistItemPair ->
                 val currentlyPlaying = with(playlistItemPair) {
                     CurrentlyPlaying(this.first.contentDetails.videoId,
+                            playlistId,
                             this.second.toString(),
                             this.first.snippet.thumbnails.default.url,
                             this.first.snippet.title,
                             this.first.snippet.description)
                 }
-                firebase.updateCurrentlyPlaying(currentlyPlaying)
-                PlayerActivity.start(activity, playlistItemPair.first.contentDetails.videoId, playlistId, playlistItemPair.second)
+                PlayerActivity.start(activity, currentlyPlaying)
             }
         })
     }

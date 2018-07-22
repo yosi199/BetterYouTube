@@ -9,9 +9,10 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import infinity.to.loop.betteryoutube.R
 import infinity.to.loop.betteryoutube.home.playlists.PlaylistActionListener
+import infinity.to.loop.betteryoutube.persistance.CurrentlyPlaying
 import infinity.to.loop.betteryoutube.persistance.FriendsCurrentlyPlaying
 
-class FeedAdapter(private val listener: PlaylistActionListener<String>,
+class FeedAdapter(private val listener: PlaylistActionListener<CurrentlyPlaying>,
                   private val items: FriendsCurrentlyPlaying) : RecyclerView.Adapter<FeedAdapter.FeedHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedHolder {
@@ -30,7 +31,7 @@ class FeedAdapter(private val listener: PlaylistActionListener<String>,
                 .load(items.currentlyPlaying[position].thumbnailsUrl)
                 .into(holder.image)
 
-        holder.itemView.setOnClickListener { listener.clickedItem(items.currentlyPlaying[position].currentlyPlaying, position) }
+        holder.itemView.setOnClickListener { listener.clickedItem(items.currentlyPlaying[position], position) }
     }
 
 
