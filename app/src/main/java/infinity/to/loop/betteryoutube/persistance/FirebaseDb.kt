@@ -14,6 +14,11 @@ class FirebaseDb @Inject constructor(private val database: FirebaseDatabase) {
         this.currentUserId = id
     }
 
+    fun removeSelf() {
+        val friends = database.getReference(friendsDB)
+        friends.child(currentUserId).removeValue()
+    }
+
     fun updateCurrentlyPlaying(data: CurrentlyPlaying) {
         val friends = database.getReference(friendsDB)
         friends.child(currentUserId).setValue(data)

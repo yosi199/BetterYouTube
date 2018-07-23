@@ -78,7 +78,7 @@ class PlayerActivity : DaggerAppCompatActivity(), ViewTreeObserver.OnGlobalLayou
 
         playerProvider.initialize(clientID, this)
 
-        binding.root.viewTreeObserver.addOnGlobalLayoutListener(this)
+//        binding.root.viewTreeObserver.addOnGlobalLayoutListener(this)
 
         viewModel.minimize.observe(this, Observer {
             val windowSize = resources.getDimension(R.dimen.youtube_player_size_1).toInt()
@@ -128,7 +128,7 @@ class PlayerActivity : DaggerAppCompatActivity(), ViewTreeObserver.OnGlobalLayou
     }
 
     override fun onGlobalLayout() {
-        createAnimators()
+//        createAnimators()
         binding.minimizeBtn.viewTreeObserver.removeOnGlobalLayoutListener(this)
     }
 

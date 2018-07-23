@@ -46,6 +46,7 @@ class HomeActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
     @Inject lateinit var playlistFragment: PlaylistFragment
     @Inject lateinit var feedFragment: FeedFragment
     @Inject lateinit var eventBus: EventBus
+    @Inject lateinit var firebaseDb: FirebaseDb
 
     private lateinit var binding: ActivityHomeBinding
     private var keyBuffer = StringBuilder()
@@ -94,6 +95,11 @@ class HomeActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
         }
         binding.searchBar.setQuery(keyBuffer.toString(), false)
         Log.d(HomeActivity::class.java.name, event.toString())
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        firebaseDb.removeSelf()
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
