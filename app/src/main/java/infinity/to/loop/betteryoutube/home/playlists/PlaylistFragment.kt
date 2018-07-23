@@ -41,7 +41,6 @@ class PlaylistFragment : DaggerFragment(), SearchView.OnQueryTextListener {
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        (context as HomeActivity).interceptsSearchQuery(this)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

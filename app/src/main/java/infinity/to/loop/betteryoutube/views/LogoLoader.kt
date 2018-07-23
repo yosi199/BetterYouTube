@@ -1,4 +1,4 @@
-package infinity.to.loop.betteryoutube
+package infinity.to.loop.betteryoutube.views
 
 import android.content.Context
 import android.widget.FrameLayout

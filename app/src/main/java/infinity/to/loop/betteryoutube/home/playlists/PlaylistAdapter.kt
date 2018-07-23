@@ -35,7 +35,7 @@ class PlaylistAdapter(response: PlaylistListResponse,
             holder.title.text = it.title
             holder.description.text = it.description
             it.thumbnails?.let {
-                Glide.with(holder.title.context).load(it.default.url).into(holder.thumbnails)
+                Glide.with(holder.title.context).load(it.high.url).into(holder.thumbnails)
             }
         }
 
