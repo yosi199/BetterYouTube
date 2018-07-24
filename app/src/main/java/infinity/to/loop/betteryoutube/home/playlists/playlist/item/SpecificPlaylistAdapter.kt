@@ -11,6 +11,7 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.google.api.services.youtube.model.PlaylistItem
 import com.google.api.services.youtube.model.PlaylistItemListResponse
+import com.google.api.services.youtube.model.VideoListResponse
 import infinity.to.loop.betteryoutube.R
 import infinity.to.loop.betteryoutube.home.playlists.PlaylistActionListener
 
@@ -18,11 +19,17 @@ class SpecificPlaylistAdapter(private val listener: PlaylistActionListener<Playl
 
     private var items: MutableList<PlaylistItem> = mutableListOf()
     private var filteredItems: MutableList<PlaylistItem> = mutableListOf()
+    private var stats: VideoListResponse? = null
 
     fun addData(playlist: PlaylistItemListResponse) {
         this.items = playlist.items
         this.filteredItems = items
         notifyItemRangeInserted(0, itemCount)
+    }
+
+    fun addStats(videoListResponse: VideoListResponse) {
+        this.stats = videoListResponse
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -78,5 +85,6 @@ class SpecificPlaylistAdapter(private val listener: PlaylistActionListener<Playl
         val description: TextView = itemView.findViewById(R.id.description)
         val duration: TextView = itemView.findViewById(R.id.duration)
         val thumbnails: ImageView = itemView.findViewById(R.id.thumbnail)
+        val likes: TextView = itemView.findViewById(R.id.likes)
     }
 }

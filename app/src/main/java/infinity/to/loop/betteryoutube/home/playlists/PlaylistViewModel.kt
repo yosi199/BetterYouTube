@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.widget.Toast
 import com.google.api.services.youtube.YouTube
+import com.google.api.services.youtube.model.Playlist
 import com.google.api.services.youtube.model.PlaylistListResponse
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -19,11 +20,11 @@ class PlaylistViewModel @Inject constructor(private val context: Context,
                                             private val clientId: String,
                                             private val sharedPreferences: SharedPreferences,
                                             private val authState: Provider<AuthState?>,
-                                            private val authService: AuthorizationService) : PlaylistActionListener<String> {
+                                            private val authService: AuthorizationService) : PlaylistActionListener<Playlist> {
 
 
     val playlistUpdate = MutableLiveData<PlaylistListResponse>()
-    val chosenPlaylistId = MutableLiveData<String>()
+    val chosenPlaylistId = MutableLiveData<Playlist>()
 
     init {
         getUserPlaylist()
@@ -43,7 +44,6 @@ class PlaylistViewModel @Inject constructor(private val context: Context,
                     .map { request.execute() }
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
-                        it.etag
                         playlistUpdate.postValue(it)
                     }, {
                         Toast.makeText(context, it.localizedMessage, Toast.LENGTH_SHORT).show()
@@ -52,7 +52,7 @@ class PlaylistViewModel @Inject constructor(private val context: Context,
         }
     }
 
-    override fun clickedItem(item: String, index: Int) {
+    override fun clickedItem(item: Playlist, index: Int) {
         chosenPlaylistId.postValue(item)
     }
 }

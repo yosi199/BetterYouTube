@@ -21,6 +21,7 @@ import infinity.to.loop.betteryoutube.common.AuthConfigurationModule
 import infinity.to.loop.betteryoutube.databinding.FragPlaylistBinding
 import infinity.to.loop.betteryoutube.home.HomeActivity
 import infinity.to.loop.betteryoutube.home.playlists.playlist.item.PlaylistItemFragment
+import infinity.to.loop.betteryoutube.utils.fadeAnimation
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationService
 import javax.inject.Inject
@@ -56,13 +57,16 @@ class PlaylistFragment : DaggerFragment(), SearchView.OnQueryTextListener {
                 adapter = PlaylistAdapter(it, viewModel)
                 binding.playlistList.layoutManager = LinearLayoutManager(activity)
                 binding.playlistList.adapter = adapter
+
+                fadeAnimation(binding.playlistList).start()
             }
         })
 
         viewModel.chosenPlaylistId.observe(activity as HomeActivity, Observer {
             val fragment = playlistItemFragment.get()
             val bundle = Bundle()
-            bundle.putString(PlaylistItemFragment.ARG_KEY_ID, it)
+            bundle.putString(PlaylistItemFragment.ARG_KEY_ID, it!!.id)
+            bundle.putString(PlaylistItemFragment.ARG_KEY_PLAYLIST_NAME, it.snippet.title)
             fragment.arguments = bundle
             fragmentManager.beginTransaction()
                     .add(R.id.fragment_container, fragment, fragment::class.java.name)

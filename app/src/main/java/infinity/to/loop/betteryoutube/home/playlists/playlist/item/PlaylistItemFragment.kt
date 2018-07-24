@@ -22,6 +22,7 @@ import infinity.to.loop.betteryoutube.databinding.FragPlaylistItemBinding
 import infinity.to.loop.betteryoutube.home.HomeActivity
 import infinity.to.loop.betteryoutube.persistance.CurrentlyPlaying
 import infinity.to.loop.betteryoutube.player.PlayerActivity
+import infinity.to.loop.betteryoutube.utils.fadeAnimation
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationService
 import javax.inject.Inject
@@ -38,6 +39,7 @@ class PlaylistItemFragment : DaggerFragment(), SearchView.OnQueryTextListener {
 
     companion object {
         const val ARG_KEY_ID: String = "PlaylistID"
+        const val ARG_KEY_PLAYLIST_NAME: String = "PlaylistName"
         fun newInstance() = PlaylistItemFragment()
     }
 
@@ -47,6 +49,8 @@ class PlaylistItemFragment : DaggerFragment(), SearchView.OnQueryTextListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         playlistId = arguments.getString(ARG_KEY_ID)
+        activity.title = arguments.getString(ARG_KEY_PLAYLIST_NAME)
+
         viewModel.load(playlistId)
         binding = DataBindingUtil.inflate(inflater, R.layout.frag_playlist_item, container, false)
         return binding.root
@@ -61,6 +65,8 @@ class PlaylistItemFragment : DaggerFragment(), SearchView.OnQueryTextListener {
                 binding.playlistItemList.layoutManager = LinearLayoutManager(activity)
                 binding.playlistItemList.adapter = adapter
                 adapter.addData(it)
+
+                fadeAnimation(binding.playlistItemList).start()
             }
         })
 
@@ -76,6 +82,10 @@ class PlaylistItemFragment : DaggerFragment(), SearchView.OnQueryTextListener {
                 }
                 PlayerActivity.start(activity, currentlyPlaying)
             }
+        })
+
+        viewModel.statsUpdate.observe(activity as HomeActivity, Observer {
+            adapter.addStats(it!!)
         })
     }
 

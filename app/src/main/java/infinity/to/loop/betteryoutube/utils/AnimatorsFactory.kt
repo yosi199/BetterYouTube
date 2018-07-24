@@ -3,8 +3,8 @@ package infinity.to.loop.betteryoutube.utils
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.view.View
+import android.view.ViewPropertyAnimator
 import android.view.animation.AccelerateDecelerateInterpolator
-
 
 fun newLocationAnimator(target: View, factor: Float): ObjectAnimator {
     val animator = ObjectAnimator.ofFloat(target, "y", target.y, target.y - (target.height * factor))
@@ -32,4 +32,12 @@ fun heightAnimator(endValue: Int, startValue: Int = 0): ValueAnimator {
     animator.duration = 500
     animator.interpolator = AccelerateDecelerateInterpolator()
     return animator
+}
+
+fun fadeAnimation(target: View): ViewPropertyAnimator {
+    val animation = target.animate().alpha(1f)
+    animation.duration = 300
+    animation.startDelay = 250
+    animation.interpolator = AccelerateDecelerateInterpolator()
+    return animation
 }

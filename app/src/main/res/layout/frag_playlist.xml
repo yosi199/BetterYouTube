@@ -22,7 +22,7 @@
             android:id="@+id/playlist_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="12dp" />
+            android:alpha="0" />
 
     </LinearLayout>
 

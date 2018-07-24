@@ -14,7 +14,7 @@ import com.google.api.services.youtube.model.PlaylistListResponse
 import infinity.to.loop.betteryoutube.R
 
 class PlaylistAdapter(response: PlaylistListResponse,
-                      private val listener: PlaylistActionListener<String>) : RecyclerView.Adapter<PlaylistAdapter.PlaylistHolder>(), Filterable {
+                      private val listener: PlaylistActionListener<Playlist>) : RecyclerView.Adapter<PlaylistAdapter.PlaylistHolder>(), Filterable {
 
     private var items: MutableList<Playlist> = response.items
     private var filteredItems: MutableList<Playlist> = response.items
@@ -43,7 +43,7 @@ class PlaylistAdapter(response: PlaylistListResponse,
             holder.trackCount.text = "${it.itemCount} Tracks"
         }
 
-        item.id?.let { id -> holder.itemView.setOnClickListener { listener.clickedItem(id, position) } }
+        item.id?.let { id -> holder.itemView.setOnClickListener { listener.clickedItem(item, position) } }
     }
 
     override fun getFilter(): Filter {
