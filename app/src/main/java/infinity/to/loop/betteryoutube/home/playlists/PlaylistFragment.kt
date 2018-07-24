@@ -65,8 +65,8 @@ class PlaylistFragment : DaggerFragment(), SearchView.OnQueryTextListener {
             bundle.putString(PlaylistItemFragment.ARG_KEY_ID, it)
             fragment.arguments = bundle
             fragmentManager.beginTransaction()
-                    .add(R.id.fragment_container, fragment)
-                    .addToBackStack("Tag")
+                    .add(R.id.fragment_container, fragment, fragment::class.java.name)
+                    .addToBackStack(fragment::class.java.name)
                     .commit()
 
         })

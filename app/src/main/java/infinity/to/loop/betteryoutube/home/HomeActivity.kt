@@ -15,7 +15,6 @@ import android.support.v7.app.ActionBar
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.SearchView
 import android.support.v7.widget.Toolbar
-import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -45,9 +44,9 @@ import javax.inject.Provider
 
 
 class HomeActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
-        ViewTreeObserver.OnGlobalFocusChangeListener,
         View.OnFocusChangeListener,
-        SearchView.OnQueryTextListener, DialogInterface.OnKeyListener {
+        SearchView.OnQueryTextListener,
+        DialogInterface.OnKeyListener {
 
     @Inject lateinit var viewModel: HomeViewModel
     @Inject lateinit var playlistFragment: PlaylistFragment
@@ -59,16 +58,17 @@ class HomeActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
     private lateinit var inputMethodManager: InputMethodManager
     private lateinit var searchAdapter: SearchAdapter
 
+    private lateinit var exitDialog: AlertDialog.Builder
+    private var exitDialogShown = false
+
     companion object {
         const val HEIGHT = 1000
     }
 
-    private lateinit var exitDialog: AlertDialog.Builder
-    private var exitDialogShown = false
-
     override
     fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_home)
         binding.viewModel = viewModel
         inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -92,7 +92,6 @@ class HomeActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
         viewModel.loadChannels()
         viewModel.loadSubscriptions()
 
-        binding.searchBar.viewTreeObserver.addOnGlobalFocusChangeListener(this)
         binding.searchBar.setOnQueryTextListener(this)
         binding.searchBar.layoutParams = Toolbar.LayoutParams(Gravity.END)
         binding.navView.setNavigationItemSelectedListener(this)
@@ -123,7 +122,7 @@ class HomeActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
                 PlayerActivity.start(this, CurrentlyPlaying(it.id.videoId,
                         null,
                         0.toString(),
-                        it.snippet.thumbnails.high.url,
+                        it.snippet.thumbnails.standard.url,
                         it.snippet.title,
                         it.snippet.description))
             }
@@ -143,13 +142,18 @@ class HomeActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
             return
         }
 
-        if (!exitDialogShown) {
-            exitDialog.show()
-            exitDialogShown = true
+        if (fragmentManager.backStackEntryCount > 1) {
+            super.onBackPressed()
+            return
+        } else if (fragmentManager.backStackEntryCount == 1) {
+            if (!exitDialogShown) {
+                exitDialog.show()
+                exitDialogShown = true
+                return
+            }
+            finish()
             return
         }
-
-        super.onBackPressed()
     }
 
     override fun onQueryTextSubmit(query: String): Boolean {
@@ -192,6 +196,7 @@ class HomeActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
             fragmentManager
                     .beginTransaction()
                     .replace(R.id.fragment_container, fragment, fragment::class.java.name)
+                    .addToBackStack(fragment::class.java.name)
                     .commit()
             setTitle(title)
         }
@@ -216,10 +221,6 @@ class HomeActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
                 hideKeyboard(view)
             }
         }
-    }
-
-    override fun onGlobalFocusChanged(oldFocus: View?, newFocus: View?) {
-        Log.d(HomeActivity::class.java.name, "FOCUS: " + newFocus.toString())
     }
 
     fun showKeybaord(v: View) {

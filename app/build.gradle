@@ -8,7 +8,8 @@ android {
         debug {
             keyAlias 'myKey'
             keyPassword 'android'
-            storeFile file('/Users/yosimizrachi/BetterYouTube/debug.keystore')
+//            storeFile file('/Users/yosimizrachi/BetterYouTube/debug.keystore')
+            storeFile file('C:\\Users\\Unknown\\Documents\\Code\\BetterYouTube\\debug.keystore')
             storePassword 'android'
         }
     }
@@ -79,17 +80,13 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'net.openid:appauth:0.7.0'
     implementation 'com.google.android.gms:play-services-auth:15.0.1'
-    implementation files(':YouTubeAndroidPlayerApi')
     implementation 'com.google.apis:google-api-services-youtube:v3-rev202-1.18.0-rc'
     implementation 'com.google.guava:guava:25.1-android'
-    implementation files('/Users/yosimizrachi/Downloads/YouTubeAndroidPlayerApi-1.2.2.zip')
-    implementation files('/Users/yosimizrachi/Downloads/YouTubeAndroidPlayerApi-1.2.2/libs/YouTubeAndroidPlayerApi.jar')
-
     // Firebase
     implementation 'com.google.firebase:firebase-core:16.0.1'
     implementation 'com.google.firebase:firebase-database:16.0.1'
     implementation 'com.google.firebase:firebase-auth:16.0.2'
-
+    implementation project(':YouTubeAndroidPlayerApi')
 }
 
 apply plugin: 'com.google.gms.google-services'
