@@ -33,8 +33,11 @@ class HomeViewModel @Inject constructor(private val sharedPrefs: SharedPreferenc
     val searchResults = MutableLiveData<SearchListResponse>()
     val searchItemClicked = MutableLiveData<SearchResult>()
 
+    private var lastSearchTime: Long = 0L
+
     companion object {
         val TAG = HomeViewModel::class.java.name
+        const val SEARCH_THROTTLE_INTERVAL = 300
     }
 
     fun onResume() {
@@ -102,6 +105,11 @@ class HomeViewModel @Inject constructor(private val sharedPrefs: SharedPreferenc
     }
 
     fun search(text: String) {
+        val now = System.currentTimeMillis()
+        if (now - lastSearchTime < SEARCH_THROTTLE_INTERVAL) {
+            return
+        }
+        lastSearchTime = now
         state.get()?.performActionWithFreshTokens(service) { accessToken, _, _ ->
             val request = api.search().list("id, snippet")
             request.q = text
@@ -114,7 +122,9 @@ class HomeViewModel @Inject constructor(private val sharedPrefs: SharedPreferenc
                     .map { request.execute() }
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
-                        searchResults.postValue(it)
+                        if (it.items.isNotEmpty()) {
+                            searchResults.postValue(it)
+                        }
                     }, {
                         Log.e(TAG, "Couldn't find search query ${it.message}")
                     })

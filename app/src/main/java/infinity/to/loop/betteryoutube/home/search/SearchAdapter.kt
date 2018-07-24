@@ -33,7 +33,9 @@ class SearchAdapter(private val listener: PlaylistActionListener<SearchResult>) 
         holder.title.text = item.snippet.title
         holder.description.text = item.snippet.description
 
-        Glide.with(holder.thumbnails).load(item.snippet.thumbnails.default.url).into(holder.thumbnails)
+        item.snippet.thumbnails?.let {
+            Glide.with(holder.thumbnails).load(item.snippet.thumbnails.default.url).into(holder.thumbnails)
+        }
 
         holder.itemView.setOnClickListener { listener.clickedItem(item, position) }
     }

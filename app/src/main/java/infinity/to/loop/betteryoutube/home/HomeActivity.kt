@@ -1,8 +1,10 @@
 package infinity.to.loop.betteryoutube.home
 
+import android.app.AlertDialog
 import android.app.Fragment
 import android.arch.lifecycle.Observer
 import android.content.Context
+import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.databinding.DataBindingUtil
 import android.os.Bundle
@@ -14,10 +16,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.SearchView
 import android.support.v7.widget.Toolbar
 import android.util.Log
-import android.view.Gravity
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewTreeObserver
+import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import com.google.api.services.youtube.YouTube
@@ -48,7 +47,7 @@ import javax.inject.Provider
 class HomeActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
         ViewTreeObserver.OnGlobalFocusChangeListener,
         View.OnFocusChangeListener,
-        SearchView.OnQueryTextListener {
+        SearchView.OnQueryTextListener, DialogInterface.OnKeyListener {
 
     @Inject lateinit var viewModel: HomeViewModel
     @Inject lateinit var playlistFragment: PlaylistFragment
@@ -59,15 +58,27 @@ class HomeActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
     private lateinit var binding: ActivityHomeBinding
     private lateinit var inputMethodManager: InputMethodManager
     private lateinit var searchAdapter: SearchAdapter
-    private var height: Int = 0
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    companion object {
+        const val HEIGHT = 1000
+    }
+
+    private lateinit var exitDialog: AlertDialog.Builder
+    private var exitDialogShown = false
+
+    override
+    fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_home)
         binding.viewModel = viewModel
         inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
         searchAdapter = SearchAdapter(viewModel)
+
+        exitDialog = AlertDialog.Builder(this)
+                .setMessage("Clicking again will exit the app.")
+                .setOnDismissListener { exitDialogShown = false }
+                .setOnKeyListener(this)
 
         // Setup menu
         val playlistMenuItem = binding.navView.menu.findItem(R.id.menu_my_playlists)
@@ -90,28 +101,20 @@ class HomeActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
             it?.let { if (it) binding.drawer.openDrawer(Gravity.START) }
         })
 
+        val animator = heightAnimator(HEIGHT)
+        animator.addUpdateListener {
+            val params = binding.searchBarDropLayout.layoutParams
+            params.height = it.animatedValue as Int
+            binding.searchBarDropLayout.layoutParams = params
+        }
+
         viewModel.searchResults.observe(this, Observer {
             binding.searchResultsList.layoutManager = LinearLayoutManager(this)
             binding.searchResultsList.adapter = searchAdapter
             searchAdapter.addData(it!!)
 
-            if (height == 0) {
-                height = binding.searchBarDropLayout.height
-            }
-            // Todo - This sucks and very slow
-            // Todo - Don't allocate new animator in every query!
-            // Todo - Don't redraw the animation for every query - throttle it down
-            synchronized(Any()) {
-                val animator = heightAnimator(height)
-
-                if (!animator.isStarted && !animator.isRunning) {
-                    animator.addUpdateListener {
-                        val params = binding.searchBarDropLayout.layoutParams
-                        params.height = it.animatedValue as Int
-                        binding.searchBarDropLayout.layoutParams = params
-                    }
-                    animator.start()
-                }
+            if (!animator.isStarted && !animator.isRunning) {
+                animator.start()
             }
         })
 
@@ -125,6 +128,28 @@ class HomeActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
                         it.snippet.description))
             }
         })
+    }
+
+    override fun onKey(dialog: DialogInterface?, keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            onBackPressed()
+        }
+        return true
+    }
+
+    override fun onBackPressed() {
+        if (binding.searchBarDropLayout.visibility == View.VISIBLE) {
+            binding.searchBarDropLayout.visibility = View.GONE
+            return
+        }
+
+        if (!exitDialogShown) {
+            exitDialog.show()
+            exitDialogShown = true
+            return
+        }
+
+        super.onBackPressed()
     }
 
     override fun onQueryTextSubmit(query: String): Boolean {
