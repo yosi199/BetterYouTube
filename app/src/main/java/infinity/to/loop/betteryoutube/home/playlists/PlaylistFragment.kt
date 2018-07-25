@@ -76,6 +76,11 @@ class PlaylistFragment : DaggerFragment(), SearchView.OnQueryTextListener {
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+        activity.title = resources.getString(R.string.my_playlists)
+    }
+
     override fun onQueryTextSubmit(query: String?): Boolean {
         return true
     }

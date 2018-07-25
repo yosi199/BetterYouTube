@@ -41,8 +41,8 @@ class SpecificPlaylistAdapter(private val listener: PlaylistActionListener<Playl
         holder.description.text = item.snippet.description
         holder.duration.text = item.contentDetails.endAt
 
-        val value = stats[item.snippet.resourceId.videoId]!!
-        holder.likes.text = "${value.viewCount} Views."
+        val statistics = stats[item.snippet.resourceId.videoId]
+        statistics?.let { holder.likes.text = "${it.viewCount} Views" }
 
         Glide.with(holder.thumbnails).load(item.snippet.thumbnails.default.url).into(holder.thumbnails)
 
