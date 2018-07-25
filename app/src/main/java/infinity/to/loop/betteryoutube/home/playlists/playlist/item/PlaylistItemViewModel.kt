@@ -25,11 +25,14 @@ class PlaylistItemViewModel @Inject constructor(private val context: Context,
                                                 private val service: AuthorizationService) : PlaylistActionListener<PlaylistItem> {
 
     val playlistUpdate = MutableLiveData<PlaylistItemListResponse>()
-    val statsUpdate = MutableLiveData<VideoListResponse>()
+    val statsUpdate = MutableLiveData<HashMap<String, VideoListResponse>>()
     val trackSelection = MutableLiveData<Pair<PlaylistItem, Int>>()
+
+    private val statisticsMap = HashMap<String, VideoListResponse>()
 
     companion object {
         val TAG = PlaylistItemViewModel::class.java.name
+
     }
 
     fun load(playlistId: String) {
@@ -46,33 +49,34 @@ class PlaylistItemViewModel @Inject constructor(private val context: Context,
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
                         playlistUpdate.postValue(it)
-                        loadStatistics(it)
+                        loadStatistics(it, accessToken)
                     }, {
                         Log.e(TAG, "Couldn't fetch playlist ${it.message}")
                     })
         }
     }
 
-    fun loadStatistics(it: PlaylistItemListResponse) {
+    private fun loadStatistics(response: PlaylistItemListResponse, accessToken: String?) {
         // Todo - not effective code! need to find a way to get all the info at once and then load the list
-        val itemsId = it.items.map { it.snippet.resourceId }
-        state.get()?.performActionWithFreshTokens(service) { accessToken, _, _ ->
-            itemsId.forEach {
-                val request = api.videos().list("snippet,contentDetails,statistics")
-                request.key = clientId
-                request.oauthToken = accessToken
-                request.id = it.videoId
 
-                Single.just(request)
-                        .subscribeOn(Schedulers.io())
-                        .map { request.execute() }
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({
-                            statsUpdate.postValue(it)
-                        }, {})
+        val itemsId = response.items.map { it.snippet.resourceId }
 
+        itemsId.forEachIndexed { index, resource ->
+            val request = api.videos().list("snippet,contentDetails,statistics")
+            request.key = clientId
+            request.oauthToken = accessToken
+            request.id = resource.videoId
+
+            Single.just(request)
+                    .subscribeOn(Schedulers.io())
+                    .map { request.execute() }
+                    .map { statisticsMap[resource.videoId] = it }
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({}, {})
+
+            if (index == itemsId.size - 1) {
+                statsUpdate.postValue(statisticsMap)
             }
-
         }
     }
 

@@ -19,7 +19,7 @@ class SpecificPlaylistAdapter(private val listener: PlaylistActionListener<Playl
 
     private var items: MutableList<PlaylistItem> = mutableListOf()
     private var filteredItems: MutableList<PlaylistItem> = mutableListOf()
-    private var stats: VideoListResponse? = null
+    private var stats = HashMap<String, VideoListResponse>()
 
     fun addData(playlist: PlaylistItemListResponse) {
         this.items = playlist.items
@@ -27,9 +27,9 @@ class SpecificPlaylistAdapter(private val listener: PlaylistActionListener<Playl
         notifyItemRangeInserted(0, itemCount)
     }
 
-    fun addStats(videoListResponse: VideoListResponse) {
+    fun addStats(videoListResponse: HashMap<String, VideoListResponse>) {
         this.stats = videoListResponse
-        notifyDataSetChanged()
+        notifyItemRangeInserted(0, itemCount)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -48,6 +48,12 @@ class SpecificPlaylistAdapter(private val listener: PlaylistActionListener<Playl
         Glide.with(holder.thumbnails).load(item.snippet.thumbnails.default.url).into(holder.thumbnails)
 
         holder.itemView.setOnClickListener { listener.clickedItem(item, position) }
+
+        val value = stats[item.snippet.resourceId.videoId]
+        value?.let {
+            val likes = it.items[0].statistics.viewCount
+            holder.likes.text = likes.toString()
+        }
     }
 
     override fun getFilter(): Filter {
