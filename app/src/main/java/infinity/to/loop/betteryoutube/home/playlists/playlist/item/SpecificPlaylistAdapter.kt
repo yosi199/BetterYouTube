@@ -11,7 +11,7 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.google.api.services.youtube.model.PlaylistItem
 import com.google.api.services.youtube.model.PlaylistItemListResponse
-import com.google.api.services.youtube.model.VideoListResponse
+import com.google.api.services.youtube.model.VideoStatistics
 import infinity.to.loop.betteryoutube.R
 import infinity.to.loop.betteryoutube.home.playlists.PlaylistActionListener
 
@@ -19,17 +19,13 @@ class SpecificPlaylistAdapter(private val listener: PlaylistActionListener<Playl
 
     private var items: MutableList<PlaylistItem> = mutableListOf()
     private var filteredItems: MutableList<PlaylistItem> = mutableListOf()
-    private var stats = HashMap<String, VideoListResponse>()
+    private var stats: HashMap<String, VideoStatistics> = hashMapOf()
 
-    fun addData(playlist: PlaylistItemListResponse) {
-        this.items = playlist.items
+    fun addData(data: Pair<PlaylistItemListResponse, HashMap<String, VideoStatistics>>) {
+        this.stats = data.second
+        this.items = data.first.items
         this.filteredItems = items
-        notifyItemRangeInserted(0, itemCount)
-    }
-
-    fun addStats(videoListResponse: HashMap<String, VideoListResponse>) {
-        this.stats = videoListResponse
-        notifyItemRangeInserted(0, itemCount)
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -40,20 +36,17 @@ class SpecificPlaylistAdapter(private val listener: PlaylistActionListener<Playl
     override fun getItemCount() = filteredItems.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = filteredItems[position]
+        val item = filteredItems[holder.adapterPosition]
         holder.title.text = item.snippet.title
         holder.description.text = item.snippet.description
         holder.duration.text = item.contentDetails.endAt
 
+        val value = stats[item.snippet.resourceId.videoId]!!
+        holder.likes.text = "${value.viewCount} Views."
+
         Glide.with(holder.thumbnails).load(item.snippet.thumbnails.default.url).into(holder.thumbnails)
 
-        holder.itemView.setOnClickListener { listener.clickedItem(item, position) }
-
-        val value = stats[item.snippet.resourceId.videoId]
-        value?.let {
-            val likes = it.items[0].statistics.viewCount
-            holder.likes.text = likes.toString()
-        }
+        holder.itemView.setOnClickListener { listener.clickedItem(item, holder.adapterPosition) }
     }
 
     override fun getFilter(): Filter {

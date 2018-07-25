@@ -83,10 +83,6 @@ class PlaylistItemFragment : DaggerFragment(), SearchView.OnQueryTextListener {
                 PlayerActivity.start(activity, currentlyPlaying)
             }
         })
-
-        viewModel.statsUpdate.observe(activity as HomeActivity, Observer {
-            adapter.addStats(it!!)
-        })
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {

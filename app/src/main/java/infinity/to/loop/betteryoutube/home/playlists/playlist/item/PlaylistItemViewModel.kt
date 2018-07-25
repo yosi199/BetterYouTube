@@ -7,7 +7,7 @@ import android.util.Log
 import com.google.api.services.youtube.YouTube
 import com.google.api.services.youtube.model.PlaylistItem
 import com.google.api.services.youtube.model.PlaylistItemListResponse
-import com.google.api.services.youtube.model.VideoListResponse
+import com.google.api.services.youtube.model.VideoStatistics
 import infinity.to.loop.betteryoutube.home.playlists.PlaylistActionListener
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -24,15 +24,13 @@ class PlaylistItemViewModel @Inject constructor(private val context: Context,
                                                 private val state: Provider<AuthState?>,
                                                 private val service: AuthorizationService) : PlaylistActionListener<PlaylistItem> {
 
-    val playlistUpdate = MutableLiveData<PlaylistItemListResponse>()
-    val statsUpdate = MutableLiveData<HashMap<String, VideoListResponse>>()
+    val playlistUpdate = MutableLiveData<Pair<PlaylistItemListResponse, HashMap<String, VideoStatistics>>>()
     val trackSelection = MutableLiveData<Pair<PlaylistItem, Int>>()
 
-    private val statisticsMap = HashMap<String, VideoListResponse>()
+    private val statisticsMap = HashMap<String, VideoStatistics>()
 
     companion object {
         val TAG = PlaylistItemViewModel::class.java.name
-
     }
 
     fun load(playlistId: String) {
@@ -48,7 +46,6 @@ class PlaylistItemViewModel @Inject constructor(private val context: Context,
                     .map { request.execute() }
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
-                        playlistUpdate.postValue(it)
                         loadStatistics(it, accessToken)
                     }, {
                         Log.e(TAG, "Couldn't fetch playlist ${it.message}")
@@ -70,13 +67,13 @@ class PlaylistItemViewModel @Inject constructor(private val context: Context,
             Single.just(request)
                     .subscribeOn(Schedulers.io())
                     .map { request.execute() }
-                    .map { statisticsMap[resource.videoId] = it }
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({}, {})
-
-            if (index == itemsId.size - 1) {
-                statsUpdate.postValue(statisticsMap)
-            }
+                    .map { statisticsMap[resource.videoId] = it.items[0].statistics }
+                    .subscribe({
+                        if (index == itemsId.size - 1) {
+                            playlistUpdate.postValue(Pair(response, statisticsMap))
+                        }
+                    }, {})
         }
     }
 
