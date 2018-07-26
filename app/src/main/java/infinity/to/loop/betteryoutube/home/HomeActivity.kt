@@ -18,6 +18,10 @@ import android.support.v7.widget.Toolbar
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.ImageView
+import android.widget.TextView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.google.api.services.youtube.YouTube
 import com.google.common.base.Strings
 import com.google.common.eventbus.EventBus
@@ -126,6 +130,19 @@ class HomeActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
                         it.snippet.thumbnails.standard.url,
                         it.snippet.title,
                         it.snippet.description))
+            }
+        })
+
+        viewModel.myChannelLoaded.observe(this, Observer {
+            it?.let {
+                val imageUrl = it.items[0].snippet.thumbnails.high.url
+                val userAvatar = findViewById<ImageView>(R.id.user_avatar)
+                Glide.with(this)
+                        .load(imageUrl)
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(userAvatar)
+                val userName = findViewById<TextView>(R.id.user_name)
+                userName.text = it.items[0].snippet.title
             }
         })
     }

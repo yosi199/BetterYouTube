@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.os.Handler
 import android.util.Log
 import com.google.api.services.youtube.YouTube
+import com.google.api.services.youtube.model.ChannelListResponse
 import com.google.api.services.youtube.model.SearchListResponse
 import com.google.api.services.youtube.model.SearchResult
 import com.google.api.services.youtube.model.SubscriptionListResponse
@@ -32,6 +33,7 @@ class HomeViewModel @Inject constructor(private val sharedPrefs: SharedPreferenc
     val openDrawer = MutableLiveData<Boolean>()
     val searchResults = MutableLiveData<SearchListResponse>()
     val searchItemClicked = MutableLiveData<SearchResult>()
+    val myChannelLoaded = MutableLiveData<ChannelListResponse>()
 
     private var lastSearchTime: Long = 0L
 
@@ -46,7 +48,7 @@ class HomeViewModel @Inject constructor(private val sharedPrefs: SharedPreferenc
 
     fun loadChannels() {
         state.get()?.performActionWithFreshTokens(service) { accessToken, _, _ ->
-            val request = api.channels().list("id, snippet")
+            val request = api.channels().list("id, snippet, statistics")
             request.key = clientId
             request.mine = true
             request.oauthToken = accessToken
@@ -58,6 +60,7 @@ class HomeViewModel @Inject constructor(private val sharedPrefs: SharedPreferenc
                     .subscribe({
                         val id = it.items[0]["id"] as String
                         firebaseDb.setUserId(id)
+                        myChannelLoaded.postValue(it)
                     }, {
                         Log.e(TAG, "Couldn't fetch channel info ${it.message}")
                     })
