@@ -18,35 +18,10 @@
         android:layout_height="match_parent"
         android:background="@android:color/black">
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/minimizeBtn"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="20dp"
-            android:backgroundTint="@color/colorPrimary"
-            android:onClick="@{viewModel::minimize}"
-            android:src="@drawable/minimize"
-            android:visibility="gone" />
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/floatingBtn"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="20dp"
-            android:onClick="@{viewModel::menu}"
-            android:src="@drawable/menu"
-            android:visibility="gone" />
-
-
         <FrameLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/floatingBtn" />
+            android:layout_height="match_parent" />
     </RelativeLayout>
 
 </layout>
