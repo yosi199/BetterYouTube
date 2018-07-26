@@ -14,9 +14,9 @@ import com.google.api.services.youtube.YouTube
 import dagger.Provides
 import dagger.Subcomponent
 import dagger.android.AndroidInjector
-import dagger.android.DaggerFragment
 import infinity.to.loop.betteryoutube.R
 import infinity.to.loop.betteryoutube.application.App
+import infinity.to.loop.betteryoutube.application.BaseFragment
 import infinity.to.loop.betteryoutube.common.AuthConfigurationModule
 import infinity.to.loop.betteryoutube.databinding.FragPlaylistBinding
 import infinity.to.loop.betteryoutube.home.HomeActivity
@@ -29,7 +29,7 @@ import javax.inject.Named
 import javax.inject.Provider
 
 
-class PlaylistFragment : DaggerFragment(), SearchView.OnQueryTextListener {
+class PlaylistFragment : BaseFragment(), SearchView.OnQueryTextListener {
 
     @Inject lateinit var viewModel: PlaylistViewModel
     @Inject lateinit var playlistItemFragment: Provider<PlaylistItemFragment>
@@ -78,7 +78,7 @@ class PlaylistFragment : DaggerFragment(), SearchView.OnQueryTextListener {
 
     override fun onResume() {
         super.onResume()
-        activity.title = resources.getString(R.string.my_playlists)
+        customTitle = resources.getString(R.string.my_playlists)
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {

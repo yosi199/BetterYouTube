@@ -38,6 +38,8 @@ class SearchAdapter(private val listener: PlaylistActionListener<SearchResult>) 
         }
 
         holder.itemView.setOnClickListener { listener.clickedItem(item, position) }
+
+        holder.showStats.visibility = View.GONE
     }
 
 
@@ -46,5 +48,6 @@ class SearchAdapter(private val listener: PlaylistActionListener<SearchResult>) 
         val description: TextView = itemView.findViewById(R.id.description)
         val duration: TextView = itemView.findViewById(R.id.duration)
         val thumbnails: ImageView = itemView.findViewById(R.id.thumbnail)
+        val showStats: TextView = itemView.findViewById(R.id.show_stats)
     }
 }

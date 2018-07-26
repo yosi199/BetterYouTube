@@ -12,8 +12,8 @@ import com.google.firebase.auth.FirebaseAuth
 import dagger.Provides
 import dagger.Subcomponent
 import dagger.android.AndroidInjector
-import dagger.android.DaggerFragment
 import infinity.to.loop.betteryoutube.R
+import infinity.to.loop.betteryoutube.application.BaseFragment
 import infinity.to.loop.betteryoutube.common.AuthConfigurationModule
 import infinity.to.loop.betteryoutube.databinding.FragFeedBinding
 import infinity.to.loop.betteryoutube.home.HomeActivity
@@ -22,7 +22,7 @@ import infinity.to.loop.betteryoutube.persistance.YouTubeDataManager
 import infinity.to.loop.betteryoutube.player.PlayerActivity
 import javax.inject.Inject
 
-class FeedFragment : DaggerFragment() {
+class FeedFragment : BaseFragment() {
 
     @Inject lateinit var viewModel: FeedViewModel
     @Inject lateinit var firebaseDb: FirebaseDb
@@ -36,6 +36,7 @@ class FeedFragment : DaggerFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.frag_feed, container, false)
+        customTitle = resources.getString(R.string.menu_item_feed_activity)
         return binding.root
     }
 

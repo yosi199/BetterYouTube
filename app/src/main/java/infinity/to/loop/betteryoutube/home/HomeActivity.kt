@@ -26,6 +26,7 @@ import dagger.Subcomponent
 import dagger.android.AndroidInjector
 import dagger.android.support.DaggerAppCompatActivity
 import infinity.to.loop.betteryoutube.R
+import infinity.to.loop.betteryoutube.application.BaseFragment
 import infinity.to.loop.betteryoutube.common.AuthConfigurationModule
 import infinity.to.loop.betteryoutube.databinding.ActivityHomeBinding
 import infinity.to.loop.betteryoutube.home.feed.FeedFragment
@@ -139,11 +140,14 @@ class HomeActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
     override fun onBackPressed() {
         if (binding.searchBarDropLayout.visibility == View.VISIBLE) {
             binding.searchBarDropLayout.visibility = View.GONE
+            binding.searchBar.onActionViewCollapsed()
             return
         }
 
         if (fragmentManager.backStackEntryCount > 1) {
             super.onBackPressed()
+            val backStackEntry = fragmentManager.getBackStackEntryAt(fragmentManager.backStackEntryCount - 1)
+            (fragmentManager.findFragmentByTag(backStackEntry.name) as BaseFragment).updateTitle()
             return
         } else if (fragmentManager.backStackEntryCount == 1) {
             if (!exitDialogShown) {
@@ -195,10 +199,22 @@ class HomeActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
         if (maybeAlreadyAdded == null) {
             fragmentManager
                     .beginTransaction()
-                    .replace(R.id.fragment_container, fragment, fragment::class.java.name)
+                    .add(R.id.fragment_container, fragment, fragment::class.java.name)
                     .addToBackStack(fragment::class.java.name)
                     .commit()
             setTitle(title)
+        } else {
+            val backStackCount = fragmentManager.backStackEntryCount
+            for (i in 0 until backStackCount) {
+                val backStackEntry = fragmentManager.getBackStackEntryAt(i)
+                if (backStackEntry.name == fragment::class.java.name) {
+                    fragmentManager.beginTransaction().show(fragment).commit()
+                    (fragment as BaseFragment).updateTitle()
+                } else {
+                    val hideFragment = fragmentManager.findFragmentByTag(backStackEntry.name)
+                    fragmentManager.beginTransaction().hide(hideFragment).commit()
+                }
+            }
         }
     }
 

@@ -37,7 +37,7 @@ class HomeViewModel @Inject constructor(private val sharedPrefs: SharedPreferenc
 
     companion object {
         val TAG = HomeViewModel::class.java.name
-        const val SEARCH_THROTTLE_INTERVAL = 300
+        const val SEARCH_THROTTLE_INTERVAL = 200
     }
 
     fun onResume() {

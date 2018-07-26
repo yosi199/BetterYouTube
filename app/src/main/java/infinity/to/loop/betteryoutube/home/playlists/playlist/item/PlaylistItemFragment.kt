@@ -14,9 +14,9 @@ import com.google.api.services.youtube.YouTube
 import dagger.Provides
 import dagger.Subcomponent
 import dagger.android.AndroidInjector
-import dagger.android.DaggerFragment
 import infinity.to.loop.betteryoutube.R
 import infinity.to.loop.betteryoutube.application.App
+import infinity.to.loop.betteryoutube.application.BaseFragment
 import infinity.to.loop.betteryoutube.common.AuthConfigurationModule
 import infinity.to.loop.betteryoutube.databinding.FragPlaylistItemBinding
 import infinity.to.loop.betteryoutube.home.HomeActivity
@@ -29,7 +29,7 @@ import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Provider
 
-class PlaylistItemFragment : DaggerFragment(), SearchView.OnQueryTextListener {
+class PlaylistItemFragment : BaseFragment(), SearchView.OnQueryTextListener {
 
     @Inject @Named("clientID") lateinit var clientID: String
     @Inject lateinit var viewModel: PlaylistItemViewModel
@@ -49,7 +49,8 @@ class PlaylistItemFragment : DaggerFragment(), SearchView.OnQueryTextListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         playlistId = arguments.getString(ARG_KEY_ID)
-        activity.title = arguments.getString(ARG_KEY_PLAYLIST_NAME)
+        customTitle = arguments.getString(ARG_KEY_PLAYLIST_NAME)
+        updateTitle()
 
         viewModel.load(playlistId)
         binding = DataBindingUtil.inflate(inflater, R.layout.frag_playlist_item, container, false)
