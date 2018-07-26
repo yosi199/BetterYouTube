@@ -6,14 +6,14 @@ import android.content.SharedPreferences
 import android.util.Log
 import com.google.api.services.youtube.YouTube
 import com.google.api.services.youtube.model.PlaylistItem
-import com.google.api.services.youtube.model.PlaylistItemListResponse
-import com.google.api.services.youtube.model.VideoStatistics
 import infinity.to.loop.betteryoutube.home.playlists.PlaylistActionListener
+import infinity.to.loop.betteryoutube.home.playlists.RequestInfo
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationService
+import java.math.BigInteger
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -22,12 +22,13 @@ class PlaylistItemViewModel @Inject constructor(private val context: Context,
                                                 private val clientId: String,
                                                 private val sharedPreferences: SharedPreferences,
                                                 private val state: Provider<AuthState?>,
-                                                private val service: AuthorizationService) : PlaylistActionListener<PlaylistItem> {
+                                                private val service: AuthorizationService) : PlaylistActionListener<TrackItemInfo>, RequestInfo<TrackItemInfo> {
 
-    val playlistUpdate = MutableLiveData<Pair<PlaylistItemListResponse, HashMap<String, VideoStatistics>>>()
-    val trackSelection = MutableLiveData<Pair<PlaylistItem, Int>>()
+    val playlistUpdate = MutableLiveData<MutableList<TrackItemInfo>>()
+    val trackSelection = MutableLiveData<Pair<TrackItemInfo, Int>>()
+    val statsUpdate = MutableLiveData<Pair<TrackItemInfo, Int>>()
 
-    private val statisticsMap = HashMap<String, VideoStatistics>()
+    private val trackItemInfoList = mutableListOf<TrackItemInfo>()
 
     companion object {
         val TAG = PlaylistItemViewModel::class.java.name
@@ -44,40 +45,51 @@ class PlaylistItemViewModel @Inject constructor(private val context: Context,
             Single.just(request)
                     .subscribeOn(Schedulers.io())
                     .map { request.execute() }
+                    .map {
+                        it.items.forEach {
+                            trackItemInfoList.add(TrackItemInfo(it))
+                        }
+                        return@map trackItemInfoList
+                    }
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
-                        loadStatistics(it, accessToken)
-                    }, {
-                        Log.e(TAG, "Couldn't fetch playlist ${it.message}")
-                    })
+                        playlistUpdate.postValue(it)
+                    },
+                            { Log.e(TAG, "Couldn't fetch playlist ${it.message}") })
         }
     }
 
-    private fun loadStatistics(response: PlaylistItemListResponse, accessToken: String?) {
-        // Todo - not effective code! need to find a way to get all the info at once and then load the list
-
-        val itemsId = response.items.map { it.snippet.resourceId }
-
-        itemsId.forEachIndexed { index, resource ->
+    override fun retrieveStatsFor(value: TrackItemInfo, index: Int) {
+        state.get()?.performActionWithFreshTokens(service) { accessToken, _, _ ->
             val request = api.videos().list("snippet,contentDetails,statistics")
             request.key = clientId
             request.oauthToken = accessToken
-            request.id = resource.videoId
-
+            request.id = value.item.snippet.resourceId.videoId
             Single.just(request)
                     .subscribeOn(Schedulers.io())
                     .map { request.execute() }
                     .observeOn(AndroidSchedulers.mainThread())
-                    .map { statisticsMap[resource.videoId] = it.items[0].statistics }
                     .subscribe({
-                        if (index == itemsId.size - 1) {
-                            playlistUpdate.postValue(Pair(response, statisticsMap))
-                        }
+                        val views = it.items[0].statistics.viewCount
+                        val comments = it.items[0].statistics.commentCount
+                        val likes = it.items[0].statistics.likeCount
+                        value.views = formatString(views)
+                        value.comments = formatString(comments)
+                        value.likes = formatString(likes)
+                        statsUpdate.postValue(Pair(value, index))
                     }, {})
         }
     }
 
-    override fun clickedItem(item: PlaylistItem, index: Int) {
+    private fun formatString(value: BigInteger): String {
+        return if (value < BigInteger.valueOf(1000)) {
+            value.toString()
+        } else {
+            value.divide(BigInteger.valueOf(1000)).toString() + "k"
+        }
+    }
+
+    override fun clickedItem(item: TrackItemInfo, index: Int) {
         trackSelection.postValue(Pair(item, index))
     }
 }

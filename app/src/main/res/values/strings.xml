@@ -6,4 +6,9 @@
     <string name="video">video</string>
     <string name="playlist">playlist</string>
     <string name="index">index</string>
+    <string name="hide_stats">Hide Stats</string>
+    <string name="show_stats">Show Stats</string>
+    <string name="views">Views: %1$s \u0020</string>
+    <string name="comments">Comments: %1$s \u0020</string>
+    <string name="likes">Likes: %1$s \u0020</string>
 </resources>

@@ -61,10 +61,12 @@ class PlaylistItemFragment : DaggerFragment(), SearchView.OnQueryTextListener {
 
         viewModel.playlistUpdate.observe(activity as HomeActivity, Observer {
             it?.let {
-                adapter = SpecificPlaylistAdapter(viewModel)
+                adapter = SpecificPlaylistAdapter(viewModel, viewModel)
                 binding.playlistItemList.layoutManager = LinearLayoutManager(activity)
                 binding.playlistItemList.adapter = adapter
-                adapter.addData(it)
+                binding.playlistItemList.post {
+                    adapter.addData(it)
+                }
 
                 fadeAnimation(binding.playlistItemList).start()
             }
@@ -73,14 +75,21 @@ class PlaylistItemFragment : DaggerFragment(), SearchView.OnQueryTextListener {
         viewModel.trackSelection.observe(activity as HomeActivity, Observer {
             it?.let { playlistItemPair ->
                 val currentlyPlaying = with(playlistItemPair) {
-                    CurrentlyPlaying(this.first.contentDetails.videoId,
+                    val item = this.first.item
+                    CurrentlyPlaying(item.contentDetails.videoId,
                             playlistId,
                             this.second.toString(),
-                            this.first.snippet.thumbnails.default.url,
-                            this.first.snippet.title,
-                            this.first.snippet.description)
+                            item.snippet.thumbnails.default.url,
+                            item.snippet.title,
+                            item.snippet.description)
                 }
                 PlayerActivity.start(activity, currentlyPlaying)
+            }
+        })
+
+        viewModel.statsUpdate.observe(activity as HomeActivity, Observer {
+            it?.let {
+                adapter.updateStatsForItem(it.first, it.second)
             }
         })
     }
