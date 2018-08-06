@@ -141,8 +141,17 @@ class HomeActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
                         .load(imageUrl)
                         .apply(RequestOptions.circleCropTransform())
                         .into(userAvatar)
+
+                val item = it.items[0]
                 val userName = findViewById<TextView>(R.id.user_name)
-                userName.text = it.items[0].snippet.title
+                val subscribersCount = findViewById<TextView>(R.id.my_channel_subscribers_count)
+                val commentsCount = findViewById<TextView>(R.id.my_channel_comment_count)
+                val videosCount = findViewById<TextView>(R.id.my_channel_videos_count)
+
+                userName.text = item.snippet.title
+                subscribersCount.text = "Subscribers: ${item.statistics.subscriberCount}"
+                commentsCount.text = "Comments: ${item.statistics.commentCount}"
+                videosCount.text = "Videos: ${item.statistics.videoCount}"
             }
         })
     }

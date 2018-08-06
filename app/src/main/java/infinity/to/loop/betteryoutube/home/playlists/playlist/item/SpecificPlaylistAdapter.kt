@@ -47,7 +47,7 @@ class SpecificPlaylistAdapter(private val listener: PlaylistActionListener<Track
         holder.description.text = value.item.snippet.description
         holder.duration.text = value.item.contentDetails.endAt
 
-        Glide.with(holder.thumbnails).load(value.item.snippet.thumbnails.default.url).into(holder.thumbnails)
+        Glide.with(holder.thumbnails).load(value.item.snippet.thumbnails.standard.url).into(holder.thumbnails)
 
         holder.itemView.setOnClickListener { listener.clickedItem(value, holder.adapterPosition) }
 

@@ -11,4 +11,5 @@
     <string name="views">Views: %1$s \u0020</string>
     <string name="comments">Comments: %1$s \u0020</string>
     <string name="likes">Likes: %1$s \u0020</string>
+    <string name="looks_like_no_one_is_online_yet">Looks like no one is online yet...</string>
 </resources>

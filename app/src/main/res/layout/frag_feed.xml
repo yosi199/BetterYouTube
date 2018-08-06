@@ -11,7 +11,7 @@
             type="infinity.to.loop.betteryoutube.home.feed.FeedViewModel" />
     </data>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/background_light"
@@ -20,8 +20,27 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/feed_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true" />
 
-    </LinearLayout>
+        <ImageView
+            android:id="@+id/feed_youtube_icon"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:background="@drawable/yt_icon_rgb" />
+
+        <TextView
+            style="@style/Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/feed_youtube_icon"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:layout_marginTop="8dp"
+            android:text="@string/looks_like_no_one_is_online_yet" />
+
+    </RelativeLayout>
 
 </layout>
