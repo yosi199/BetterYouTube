@@ -2,11 +2,11 @@ package infinity.to.loop.betteryoutube.home.playlists
 
 import android.arch.lifecycle.MutableLiveData
 import android.content.Context
-import android.content.SharedPreferences
 import android.widget.Toast
 import com.google.api.services.youtube.YouTube
 import com.google.api.services.youtube.model.Playlist
 import com.google.api.services.youtube.model.PlaylistListResponse
+import infinity.to.loop.betteryoutube.persistance.YouTubeDataManager
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -18,7 +18,7 @@ import javax.inject.Provider
 class PlaylistViewModel @Inject constructor(private val context: Context,
                                             private val youtube: YouTube,
                                             private val clientId: String,
-                                            private val sharedPreferences: SharedPreferences,
+                                            private val youTubeDataManager: YouTubeDataManager,
                                             private val authState: Provider<AuthState?>,
                                             private val authService: AuthorizationService) : PlaylistActionListener<Playlist> {
 
@@ -38,12 +38,12 @@ class PlaylistViewModel @Inject constructor(private val context: Context,
             request.key = clientId
             request.oauthToken = accessToken
 
-
             Single.just(request)
                     .subscribeOn(Schedulers.io())
                     .map { request.execute() }
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
+                        youTubeDataManager.lastPlaylistResponse = it
                         playlistUpdate.postValue(it)
                     }, {
                         Toast.makeText(context, it.localizedMessage, Toast.LENGTH_SHORT).show()

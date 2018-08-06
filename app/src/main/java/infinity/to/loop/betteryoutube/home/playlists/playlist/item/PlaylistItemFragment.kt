@@ -1,8 +1,6 @@
 package infinity.to.loop.betteryoutube.home.playlists.playlist.item
 
 import android.arch.lifecycle.Observer
-import android.content.Context
-import android.content.SharedPreferences
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -15,12 +13,12 @@ import dagger.Provides
 import dagger.Subcomponent
 import dagger.android.AndroidInjector
 import infinity.to.loop.betteryoutube.R
-import infinity.to.loop.betteryoutube.application.App
 import infinity.to.loop.betteryoutube.application.BaseFragment
 import infinity.to.loop.betteryoutube.common.AuthConfigurationModule
 import infinity.to.loop.betteryoutube.databinding.FragPlaylistItemBinding
 import infinity.to.loop.betteryoutube.home.HomeActivity
 import infinity.to.loop.betteryoutube.persistance.CurrentlyPlaying
+import infinity.to.loop.betteryoutube.persistance.YouTubeDataManager
 import infinity.to.loop.betteryoutube.player.PlayerActivity
 import infinity.to.loop.betteryoutube.utils.fadeAnimation
 import net.openid.appauth.AuthState
@@ -41,10 +39,6 @@ class PlaylistItemFragment : BaseFragment(), SearchView.OnQueryTextListener {
         const val ARG_KEY_ID: String = "PlaylistID"
         const val ARG_KEY_PLAYLIST_NAME: String = "PlaylistName"
         fun newInstance() = PlaylistItemFragment()
-    }
-
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -112,17 +106,16 @@ class PlaylistItemFragment : BaseFragment(), SearchView.OnQueryTextListener {
 
             @JvmStatic
             @Provides
-            fun viewModel(app: App,
-                          youTube: YouTube,
+            fun viewModel(youTube: YouTube,
                           @Named("clientID") clientID: String,
-                          sharedPrefs: SharedPreferences,
+                          youTubeDataManager: YouTubeDataManager,
                           authState: Provider<AuthState?>,
                           authService: AuthorizationService): PlaylistItemViewModel {
 
-                return PlaylistItemViewModel(app,
+                return PlaylistItemViewModel(
                         youTube,
                         clientID,
-                        sharedPrefs,
+                        youTubeDataManager,
                         authState,
                         authService)
             }

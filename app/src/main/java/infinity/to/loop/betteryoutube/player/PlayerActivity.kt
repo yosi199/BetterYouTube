@@ -6,6 +6,7 @@ import android.content.Intent.*
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import com.google.android.youtube.player.YouTubeInitializationResult
 import com.google.android.youtube.player.YouTubePlayer
 import dagger.Provides
@@ -17,16 +18,21 @@ import infinity.to.loop.betteryoutube.common.AuthConfigurationModule
 import infinity.to.loop.betteryoutube.databinding.ActivityPlayerBinding
 import infinity.to.loop.betteryoutube.persistance.CurrentlyPlaying
 import infinity.to.loop.betteryoutube.persistance.FirebaseDb
+import infinity.to.loop.betteryoutube.persistance.YouTubeDataManager
 import javax.inject.Inject
 import javax.inject.Named
 
 class PlayerActivity : DaggerAppCompatActivity(),
-        YouTubePlayer.OnInitializedListener {
+        YouTubePlayer.OnInitializedListener,
+        YouTubePlayer.PlayerStateChangeListener,
+        YouTubePlayer.PlaybackEventListener,
+        YouTubePlayer.PlaylistEventListener {
 
     @Inject @Named("clientID") lateinit var clientID: String
     @Inject lateinit var viewModel: PlayerViewModel
     @Inject lateinit var playerProvider: CustomYouTubePlayer
     @Inject lateinit var firebase: FirebaseDb
+    @Inject lateinit var youTubeDataManager: YouTubeDataManager
 
     private lateinit var binding: ActivityPlayerBinding
 
@@ -55,7 +61,6 @@ class PlayerActivity : DaggerAppCompatActivity(),
         playerProvider.initialize(clientID, this)
     }
 
-
     override fun onResume() {
         super.onResume()
 
@@ -67,15 +72,66 @@ class PlayerActivity : DaggerAppCompatActivity(),
         }
     }
 
+    override fun onPlaylistEnded() {
+        Toast.makeText(this, "onPlaylistEnded", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onPrevious() {
+        Toast.makeText(this, "onPrevious", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onNext() {
+        Toast.makeText(this, "onNext", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onSeekTo(p0: Int) {}
+
+    override fun onBuffering(p0: Boolean) {}
+
+    override fun onPlaying() {}
+
+    override fun onStopped() {}
+
+    override fun onPaused() {}
+
+    override fun onAdStarted() {}
+
+    override fun onLoading() {}
+
+    override fun onVideoStarted() {}
+
+    override fun onLoaded(videoId: String) {
+        youTubeDataManager.lastPlayItemListResponse?.let {
+            it.items.forEachIndexed { index, playlistItem ->
+                if (playlistItem.snippet.resourceId.videoId == videoId) {
+                    val currentlyPlaying = CurrentlyPlaying(videoId,
+                            currentlyPlaying.playlistId,
+                            index.toString(),
+                            playlistItem.snippet.thumbnails.default.url,
+                            playlistItem.snippet.title,
+                            playlistItem.snippet.description)
+                    firebase.updateCurrentlyPlaying(currentlyPlaying)
+                }
+            }
+        }
+    }
+
+    override fun onVideoEnded() {}
+
+    override fun onError(p0: YouTubePlayer.ErrorReason?) {}
+
     override fun onInitializationSuccess(provider: YouTubePlayer.Provider?, player: YouTubePlayer?, wasRestored: Boolean) {
         player?.let {
             this@PlayerActivity.player = player
-            firebase.updateCurrentlyPlaying(currentlyPlaying)
-            currentlyPlaying.playlistId?.let {
+            player.setPlaybackEventListener(this)
+            player.setPlayerStateChangeListener(this)
+            player.setPlaylistEventListener(this)
+
+            if (currentlyPlaying.playlistId == null) {
+                player.loadVideo(currentlyPlaying.videoId)
+            } else {
                 player.loadPlaylist(currentlyPlaying.playlistId, currentlyPlaying.value.toInt(), 0)
-                return
             }
-            player.loadVideo(currentlyPlaying.videoId)
         }
     }
 

@@ -2,7 +2,6 @@ package infinity.to.loop.betteryoutube.home.playlists
 
 import android.arch.lifecycle.Observer
 import android.content.Context
-import android.content.SharedPreferences
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -21,6 +20,7 @@ import infinity.to.loop.betteryoutube.common.AuthConfigurationModule
 import infinity.to.loop.betteryoutube.databinding.FragPlaylistBinding
 import infinity.to.loop.betteryoutube.home.HomeActivity
 import infinity.to.loop.betteryoutube.home.playlists.playlist.item.PlaylistItemFragment
+import infinity.to.loop.betteryoutube.persistance.YouTubeDataManager
 import infinity.to.loop.betteryoutube.utils.fadeAnimation
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationService
@@ -101,14 +101,14 @@ class PlaylistFragment : BaseFragment(), SearchView.OnQueryTextListener {
             fun viewModel(app: App,
                           youTube: YouTube,
                           @Named("clientID") clientID: String,
-                          sharedPrefs: SharedPreferences,
+                          youTubeDataManager: YouTubeDataManager,
                           authState: Provider<AuthState?>,
                           authService: AuthorizationService): PlaylistViewModel {
 
                 return PlaylistViewModel(app,
                         youTube,
                         clientID,
-                        sharedPrefs,
+                        youTubeDataManager,
                         authState,
                         authService)
             }

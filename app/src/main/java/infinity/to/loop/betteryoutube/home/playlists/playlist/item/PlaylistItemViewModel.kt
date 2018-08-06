@@ -1,13 +1,11 @@
 package infinity.to.loop.betteryoutube.home.playlists.playlist.item
 
 import android.arch.lifecycle.MutableLiveData
-import android.content.Context
-import android.content.SharedPreferences
 import android.util.Log
 import com.google.api.services.youtube.YouTube
-import com.google.api.services.youtube.model.PlaylistItem
 import infinity.to.loop.betteryoutube.home.playlists.PlaylistActionListener
 import infinity.to.loop.betteryoutube.home.playlists.RequestInfo
+import infinity.to.loop.betteryoutube.persistance.YouTubeDataManager
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -17,10 +15,9 @@ import java.math.BigInteger
 import javax.inject.Inject
 import javax.inject.Provider
 
-class PlaylistItemViewModel @Inject constructor(private val context: Context,
-                                                private val api: YouTube,
+class PlaylistItemViewModel @Inject constructor(private val api: YouTube,
                                                 private val clientId: String,
-                                                private val sharedPreferences: SharedPreferences,
+                                                private val youTubeDataManager: YouTubeDataManager,
                                                 private val state: Provider<AuthState?>,
                                                 private val service: AuthorizationService) : PlaylistActionListener<TrackItemInfo>, RequestInfo<TrackItemInfo> {
 
@@ -46,6 +43,7 @@ class PlaylistItemViewModel @Inject constructor(private val context: Context,
                     .subscribeOn(Schedulers.io())
                     .map { request.execute() }
                     .map {
+                        youTubeDataManager.lastPlayItemListResponse = it
                         it.items.forEach {
                             trackItemInfoList.add(TrackItemInfo(it))
                         }
