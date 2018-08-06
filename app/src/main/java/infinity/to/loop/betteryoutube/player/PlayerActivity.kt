@@ -6,7 +6,6 @@ import android.content.Intent.*
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import com.google.android.youtube.player.YouTubeInitializationResult
 import com.google.android.youtube.player.YouTubePlayer
 import dagger.Provides
@@ -24,9 +23,7 @@ import javax.inject.Named
 
 class PlayerActivity : DaggerAppCompatActivity(),
         YouTubePlayer.OnInitializedListener,
-        YouTubePlayer.PlayerStateChangeListener,
-        YouTubePlayer.PlaybackEventListener,
-        YouTubePlayer.PlaylistEventListener {
+        YouTubePlayer.PlayerStateChangeListener {
 
     @Inject @Named("clientID") lateinit var clientID: String
     @Inject lateinit var viewModel: PlayerViewModel
@@ -72,27 +69,10 @@ class PlayerActivity : DaggerAppCompatActivity(),
         }
     }
 
-    override fun onPlaylistEnded() {
-        Toast.makeText(this, "onPlaylistEnded", Toast.LENGTH_SHORT).show()
+    override fun onDestroy() {
+        super.onDestroy()
+        firebase.removeSelf()
     }
-
-    override fun onPrevious() {
-        Toast.makeText(this, "onPrevious", Toast.LENGTH_SHORT).show()
-    }
-
-    override fun onNext() {
-        Toast.makeText(this, "onNext", Toast.LENGTH_SHORT).show()
-    }
-
-    override fun onSeekTo(p0: Int) {}
-
-    override fun onBuffering(p0: Boolean) {}
-
-    override fun onPlaying() {}
-
-    override fun onStopped() {}
-
-    override fun onPaused() {}
 
     override fun onAdStarted() {}
 
@@ -123,9 +103,7 @@ class PlayerActivity : DaggerAppCompatActivity(),
     override fun onInitializationSuccess(provider: YouTubePlayer.Provider?, player: YouTubePlayer?, wasRestored: Boolean) {
         player?.let {
             this@PlayerActivity.player = player
-            player.setPlaybackEventListener(this)
             player.setPlayerStateChangeListener(this)
-            player.setPlaylistEventListener(this)
 
             if (currentlyPlaying.playlistId == null) {
                 player.loadVideo(currentlyPlaying.videoId)

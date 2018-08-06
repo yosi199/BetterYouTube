@@ -196,11 +196,6 @@ class HomeActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
         return true
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        firebaseDb.removeSelf()
-    }
-
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         item.isChecked = true
         binding.drawer.closeDrawers()
